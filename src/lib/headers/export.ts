@@ -20,16 +20,16 @@ function statusColor(s: HeaderFinding["status"]) {
 				: "#b91c1c";
 }
 
+const HTML_ENTITIES: Record<string, string> = {
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+	'"': "&quot;",
+	"'": "&#39;",
+};
+
 function escapeHtml(s: string) {
-	return s.replace(/[&<>"']/g, (c) => {
-		return {
-			"&": "&amp;",
-			"<": "&lt;",
-			">": "&gt;",
-			'"': "&quot;",
-			"'": "&#39;",
-		}[c]!;
-	});
+	return s.replace(/[&<>"']/g, (c) => HTML_ENTITIES[c] ?? c);
 }
 
 export function reportToHtml(r: AnalysisReport): string {
