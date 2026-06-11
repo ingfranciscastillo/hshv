@@ -29,7 +29,6 @@ function HistoryPage() {
 	const [items, setItems] = useState<AnalysisReport[]>([]);
 
 	useEffect(() => {
-		document.documentElement.classList.add("dark");
 		const sync = () => setItems(loadHistory());
 		sync();
 		window.addEventListener("hshv:history-updated", sync);

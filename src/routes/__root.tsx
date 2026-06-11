@@ -122,6 +122,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">
 			<head>
+				<script suppressHydrationWarning>
+					{`document.documentElement.classList.add('dark')`}
+				</script>
 				<HeadContent />
 			</head>
 			<body>
