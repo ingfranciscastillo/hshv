@@ -1,19 +1,41 @@
 import type { AnalysisReport, HeaderFinding } from "./types";
 
 function statusLabel(s: HeaderFinding["status"]) {
-  return s === "secure" ? "✅ Seguro" : s === "improvable" ? "⚠️ Mejorable" : s === "missing" ? "❌ Ausente" : "🚨 Inseguro";
+	return s === "secure"
+		? "✅ Seguro"
+		: s === "improvable"
+			? "⚠️ Mejorable"
+			: s === "missing"
+				? "❌ Ausente"
+				: "🚨 Inseguro";
 }
 
 function statusColor(s: HeaderFinding["status"]) {
-  return s === "secure" ? "#16a34a" : s === "improvable" ? "#d97706" : s === "missing" ? "#dc2626" : "#b91c1c";
+	return s === "secure"
+		? "#16a34a"
+		: s === "improvable"
+			? "#d97706"
+			: s === "missing"
+				? "#dc2626"
+				: "#b91c1c";
 }
 
 function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+	return s.replace(/[&<>"']/g, (c) => {
+		return {
+			"&": "&amp;",
+			"<": "&lt;",
+			">": "&gt;",
+			'"': "&quot;",
+			"'": "&#39;",
+		}[c]!;
+	});
 }
 
 export function reportToHtml(r: AnalysisReport): string {
-  const rows = r.findings.map((f) => `
+	const rows = r.findings
+		.map(
+			(f) => `
     <tr>
       <td><strong>${escapeHtml(f.name)}</strong><div style="color:#64748b;font-size:12px">${f.category}</div></td>
       <td><span style="color:${statusColor(f.status)};font-weight:600">${statusLabel(f.status)}</span></td>
@@ -21,9 +43,11 @@ export function reportToHtml(r: AnalysisReport): string {
       <td>${escapeHtml(f.description)}</td>
       <td>${escapeHtml(f.risk)}</td>
       <td><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;word-break:break-all">${escapeHtml(f.recommendation)}</code></td>
-    </tr>`).join("");
+    </tr>`,
+		)
+		.join("");
 
-  return `<!doctype html>
+	return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><title>Reporte — ${escapeHtml(r.url)}</title>
 <style>
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0b1220;color:#e2e8f0;margin:0;padding:32px}
@@ -56,19 +80,41 @@ export function reportToHtml(r: AnalysisReport): string {
 }
 
 export function downloadFile(filename: string, content: string, mime: string) {
-  const blob = new Blob([content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = filename; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+	const blob = new Blob([content], { type: mime });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = filename;
+	a.click();
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export function exportJson(r: AnalysisReport) {
-  const host = (() => { try { return new URL(r.finalUrl).hostname; } catch { return "report"; } })();
-  downloadFile(`headers-${host}-${Date.now()}.json`, JSON.stringify(r, null, 2), "application/json");
+	const host = (() => {
+		try {
+			return new URL(r.finalUrl).hostname;
+		} catch {
+			return "report";
+		}
+	})();
+	downloadFile(
+		`headers-${host}-${Date.now()}.json`,
+		JSON.stringify(r, null, 2),
+		"application/json",
+	);
 }
 
 export function exportHtml(r: AnalysisReport) {
-  const host = (() => { try { return new URL(r.finalUrl).hostname; } catch { return "report"; } })();
-  downloadFile(`headers-${host}-${Date.now()}.html`, reportToHtml(r), "text/html");
+	const host = (() => {
+		try {
+			return new URL(r.finalUrl).hostname;
+		} catch {
+			return "report";
+		}
+	})();
+	downloadFile(
+		`headers-${host}-${Date.now()}.html`,
+		reportToHtml(r),
+		"text/html",
+	);
 }
