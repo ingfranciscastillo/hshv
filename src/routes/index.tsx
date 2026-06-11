@@ -97,22 +97,19 @@ function IndexPage() {
 					<section className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto pt-4">
 						{[
 							[
-								"6 headers críticos",
-								"CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy y Permissions-Policy.",
+								"Detección automática",
+								"Analiza CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy y Permissions-Policy en segundos.",
 							],
 							[
-								"3 headers recomendados",
-								"COOP, COEP y CORP para aislamiento de origen cruzado.",
+								"Reporte accionable",
+								"Identifica configuraciones faltantes o débiles y muestra exactamente qué debes corregir.",
 							],
 							[
-								"Score 0–100",
-								"Ponderación por impacto + penalización por información expuesta.",
+								"Score de seguridad",
+								"Obtén una puntuación de 0 a 100 basada en buenas prácticas modernas y riesgos detectados.",
 							],
 						].map(([t, d]) => (
-							<div
-								key={t}
-								className="p-5 rounded-lg border border-border bg-card/60"
-							>
+							<div key={t} className="p-5 rounded-lg border border-border">
 								<div className="text-sm font-bold text-primary">{t}</div>
 								<div className="text-sm text-muted-foreground mt-1">{d}</div>
 							</div>

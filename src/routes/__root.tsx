@@ -9,6 +9,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import FaultyTerminalClient from "@/components/FaultyTerminalClient";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 
@@ -128,7 +129,26 @@ function RootShell({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				{children}
+				<div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
+					<FaultyTerminalClient
+						scale={1.5}
+						gridMul={[2, 1]}
+						digitSize={1.2}
+						timeScale={0.5}
+						scanlineIntensity={0.5}
+						glitchAmount={1}
+						flickerAmount={1}
+						noiseAmp={1}
+						curvature={0.1}
+						tint="#1a1f2e"
+						mouseReact
+						mouseStrength={0.5}
+						pageLoadAnimation
+						brightness={0.6}
+					/>
+				</div>
+
+				<div style={{ position: "relative", zIndex: 1 }}>{children}</div>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",
