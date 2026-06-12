@@ -2,7 +2,7 @@ import { SiBuymeacoffee, SiGithub } from "@icons-pack/react-simple-icons";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { ExportButtons } from "@/components/hshv/ExportButtons";
 import { AppHeader } from "@/components/hshv/Header";

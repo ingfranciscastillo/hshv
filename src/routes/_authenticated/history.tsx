@@ -6,7 +6,7 @@ import { HistoryTable } from "@/components/hshv/HistoryTable";
 import { clearHistory, loadHistory } from "@/lib/headers/storage";
 import type { AnalysisReport } from "@/lib/headers/types";
 
-export const Route = createFileRoute("/history")({
+export const Route = createFileRoute("/_authenticated/history")({
 	head: () => ({
 		meta: [
 			{ title: "Historial — HTTP Security Headers Validator" },
