@@ -1,4 +1,3 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
@@ -8,10 +7,25 @@ import {
 	Scripts,
 	useRouter,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import FaultyTerminalClient from "@/components/FaultyTerminalClient";
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
+import { lazy, Suspense } from "react";
+import TanStackQueryDevtoolsConfig from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
+
+const TanStackDevtools = lazy(() =>
+	import("@tanstack/react-devtools").then((m) => ({
+		default: m.TanStackDevtools,
+	})),
+);
+const TanStackRouterDevtoolsPanel = lazy(() =>
+	import("@tanstack/react-router-devtools").then((m) => ({
+		default: m.TanStackRouterDevtoolsPanel,
+	})),
+);
+const FaultyTerminalClient = lazy(() =>
+	import("@/components/FaultyTerminalClient").then((m) => ({
+		default: m.default,
+	})),
+);
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -130,37 +144,41 @@ function RootShell({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
-					<FaultyTerminalClient
-						scale={1.5}
-						gridMul={[2, 1]}
-						digitSize={1.2}
-						timeScale={0.5}
-						scanlineIntensity={0.5}
-						glitchAmount={1}
-						flickerAmount={1}
-						noiseAmp={1}
-						curvature={0.1}
-						tint="#1a1f2e"
-						mouseReact
-						mouseStrength={0.5}
-						pageLoadAnimation
-						brightness={0.6}
-					/>
+					<Suspense fallback={null}>
+						<FaultyTerminalClient
+							scale={1.5}
+							gridMul={[2, 1]}
+							digitSize={1.2}
+							timeScale={0.5}
+							scanlineIntensity={0.5}
+							glitchAmount={1}
+							flickerAmount={1}
+							noiseAmp={1}
+							curvature={0.1}
+							tint="#1a1f2e"
+							mouseReact
+							mouseStrength={0.5}
+							pageLoadAnimation
+							brightness={0.6}
+						/>
+					</Suspense>
 				</div>
 
 				<div style={{ position: "relative", zIndex: 1 }}>{children}</div>
-				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
-					plugins={[
-						{
-							name: "Tanstack Router",
-							render: <TanStackRouterDevtoolsPanel />,
-						},
-						TanStackQueryDevtools,
-					]}
-				/>
+				<Suspense fallback={null}>
+					<TanStackDevtools
+						config={{
+							position: "bottom-right",
+						}}
+						plugins={[
+							{
+								name: "Tanstack Router",
+								render: <TanStackRouterDevtoolsPanel />,
+							},
+							TanStackQueryDevtoolsConfig,
+						]}
+					/>
+				</Suspense>
 				<Scripts />
 			</body>
 		</html>
@@ -172,7 +190,6 @@ function RootComponent() {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			{/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
 			<Outlet />
 		</QueryClientProvider>
 	);

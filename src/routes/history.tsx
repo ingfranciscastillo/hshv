@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DashboardCards } from "@/components/hshv/DashboardCards";
 import { AppHeader } from "@/components/hshv/Header";
 import { HistoryTable } from "@/components/hshv/HistoryTable";
@@ -28,16 +28,19 @@ export const Route = createFileRoute("/history")({
 function HistoryPage() {
 	const [items, setItems] = useState<AnalysisReport[]>([]);
 
-	useEffect(() => {
-		const sync = () => setItems(loadHistory());
-		sync();
-		window.addEventListener("hshv:history-updated", sync);
-		window.addEventListener("storage", sync);
-		return () => {
-			window.removeEventListener("hshv:history-updated", sync);
-			window.removeEventListener("storage", sync);
-		};
+	const syncHistory = useCallback(() => {
+		setItems(loadHistory());
 	}, []);
+
+	useEffect(() => {
+		syncHistory();
+		window.addEventListener("hshv:history-updated", syncHistory);
+		window.addEventListener("storage", syncHistory);
+		return () => {
+			window.removeEventListener("hshv:history-updated", syncHistory);
+			window.removeEventListener("storage", syncHistory);
+		};
+	}, [syncHistory]);
 
 	return (
 		<div className="min-h-screen">

@@ -14,6 +14,21 @@ import { analyzeUrl } from "@/lib/headers/analyze.functions";
 import { saveToHistory } from "@/lib/headers/storage";
 import type { AnalysisReport } from "@/lib/headers/types";
 
+const FEATURES = [
+	{
+		title: "Detección automática",
+		desc: "Analiza CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy y Permissions-Policy en segundos.",
+	},
+	{
+		title: "Reporte accionable",
+		desc: "Identifica configuraciones faltantes o débiles y muestra exactamente qué debes corregir.",
+	},
+	{
+		title: "Score de seguridad",
+		desc: "Obtén una puntuación de 0 a 100 basada en buenas prácticas modernas y riesgos detectados.",
+	},
+] as const;
+
 export const Route = createFileRoute("/")({
 	head: () => ({
 		meta: [
@@ -96,23 +111,15 @@ function IndexPage() {
 
 				{!report && (
 					<section className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto pt-4">
-						{[
-							[
-								"Detección automática",
-								"Analiza CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy y Permissions-Policy en segundos.",
-							],
-							[
-								"Reporte accionable",
-								"Identifica configuraciones faltantes o débiles y muestra exactamente qué debes corregir.",
-							],
-							[
-								"Score de seguridad",
-								"Obtén una puntuación de 0 a 100 basada en buenas prácticas modernas y riesgos detectados.",
-							],
-						].map(([t, d]) => (
-							<div key={t} className="p-5 rounded-lg border border-border">
-								<div className="text-sm font-bold text-primary">{t}</div>
-								<div className="text-sm text-muted-foreground mt-1">{d}</div>
+						{FEATURES.map((f) => (
+							<div
+								key={f.title}
+								className="p-5 rounded-lg border border-border"
+							>
+								<div className="text-sm font-bold text-primary">{f.title}</div>
+								<div className="text-sm text-muted-foreground mt-1">
+									{f.desc}
+								</div>
 							</div>
 						))}
 					</section>
