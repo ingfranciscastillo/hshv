@@ -1,261 +1,237 @@
-Welcome to your new TanStack Start app! 
+# hshv
 
-# Getting Started
+HTTP headers analyzer with security scoring and recommendations.
 
-To run this application:
+<!-- README-I18N:START -->
+
+**English** | [Español](./README.es.md)
+
+<!-- README-I18N:END -->
+
+![TanStack Start](https://img.shields.io/badge/TanStack%20Start-latest-FF3E00?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.1-38B2AC?style=flat-square)
+![Better Auth](https://img.shields.io/badge/Better%20Auth-1.5-FF477E?style=flat-square)
+
+## What This Does
+
+Security analysis tool for HTTP headers. Evaluates the security configuration of any website, generates detailed scores, and provides actionable recommendations to improve protection.
+
+## Tech Stack
+
+- **Framework**: [TanStack Start](https://tanstack.com/start) - SSR with React Router
+- **Auth**: [Better Auth](https://www.better-auth.com/) - Complete authentication
+- **Database**: [Drizzle ORM](https://orm.drizzle.team/) + PostgreSQL
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **Validation**: [Zod](https://zod.dev/) - Typed validation schemas
+
+## Getting Started
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-# Building For Production
+## Features
 
-To build this application for production:
+### Headers Evaluation
 
-```bash
-pnpm build
+For each security HTTP header, the system shows:
+
+| Field | Description |
+|-------|-------------|
+| **Status** | ✅ Secure \| ⚠️ Needs Improvement \| ❌ Missing \| 🚨 Insecure |
+| **Detected Value** | Current header value or "Not detected" |
+| **Technical Description** | Explanation of the header's purpose |
+| **Potential Impact** | Security risks if not configured |
+| **Concrete Recommendation** | Exact code to fix the issue |
+
+**Evaluation example:**
+
+```
+Header: X-Frame-Options
+Status: ❌ Missing
+
+Description: Prevents clickjacking attacks.
+Impact: An attacker could load the site in a malicious iframe.
+Recommendation: X-Frame-Options: DENY
 ```
 
-## Testing
+### Scoring System
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+Generates a global score from 0-100:
 
-```bash
-pnpm test
-```
+| Score | Level | Description |
+|-------|-------|-------------|
+| 0-39 | 🔴 Critical | Very vulnerable configuration |
+| 40-69 | 🟡 Poor | Essential security measures missing |
+| 70-89 | 🟢 Acceptable | Basic implementation correct |
+| 90-100 | ✨ Excellent | Optimal security configuration |
 
-## Styling
+Includes:
+- Total numeric score
+- Visual bar with color gradient
+- Executive summary of security status
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+### Export
 
-### Removing Tailwind CSS
+Download reports in multiple formats:
+- **HTML**: Complete report viewable in any browser
+- **JSON**: Structured data for integration with other tools
 
-If you prefer not to use Tailwind CSS:
+### History
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
+Stores performed analyses:
+- Date and time of analysis
+- Analyzed URL
+- Obtained score
+- Quick access to previous reports
 
-## Linting & Formatting
+### Dashboard
 
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
-
-```bash
-pnpm lint
-pnpm format
-pnpm check
-```
-
-
-## Deploy with Nitro
-
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
-
-```bash
-npm run build
-node dist/server/index.mjs
-```
-
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
-
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
-
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
-## Setting up Better Auth
-
-1. Generate and set the `BETTER_AUTH_SECRET` environment variable in your `.env.local`:
-
-   ```bash
-   pnpm dlx @better-auth/cli secret
-   ```
-
-2. Visit the [Better Auth documentation](https://www.better-auth.com) to unlock the full potential of authentication in your app.
-
-### Adding a Database (Optional)
-
-Better Auth can work in stateless mode, but to persist user data, add a database:
-
-```typescript
-// src/lib/auth.ts
-import { betterAuth } from "better-auth";
-import { Pool } from "pg";
-
-export const auth = betterAuth({
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-  }),
-  // ... rest of config
-});
-```
-
-Then run migrations:
-
-```bash
-pnpm dlx @better-auth/cli migrate
-```
-
-
+Statistics panel:
+- Total analyses performed
+- Average scores
+- Most frequently missing headers
+- Security trends
 
 ## Routing
 
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
+This project uses [TanStack Router](https://tanstack.com/router) with file-based routing in `src/routes`.
 
-### Adding A Route
+### Adding a Route
 
-To add a new route to your application just add a new file in the `./src/routes` directory.
+Create a new file in `./src/routes`:
 
-TanStack will automatically generate the content of the route file for you.
+```tsx
+// src/routes/new-route.tsx
+import { createFileRoute } from '@tanstack/react-router'
 
-Now that you have two routes you can use a `Link` component to navigate between them.
+export const Route = createFileRoute('/new-route')({
+  component: NewRouteComponent,
+})
+
+function NewRouteComponent() {
+  return <div>New route</div>
+}
+```
 
 ### Adding Links
 
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
 ```tsx
-import { Link } from "@tanstack/react-router";
-```
+import { Link } from "@tanstack/react-router"
 
-Then anywhere in your JSX you can use it like so:
-
-```tsx
 <Link to="/about">About</Link>
 ```
 
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
 ## Server Functions
 
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
+Server-side functions callable from client:
 
 ```tsx
 import { createServerFn } from '@tanstack/react-start'
 
-const getServerTime = createServerFn({
+const getAnalysis = createServerFn({
   method: 'GET',
 }).handler(async () => {
-  return new Date().toISOString()
+  // Your server code here
+  return { result: 'data' }
 })
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
 ```
 
 ## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
 
 ```tsx
 import { createFileRoute } from '@tanstack/react-router'
 import { json } from '@tanstack/react-start'
 
-export const Route = createFileRoute('/api/hello')({
+export const Route = createFileRoute('/api/endpoint')({
   server: {
     handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
+      GET: () => json({ message: 'Hello' }),
     },
   },
 })
 ```
 
-## Data Fetching
+## Database
 
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
+Data management with Drizzle ORM:
 
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
+```bash
+pnpm db:generate   # Generate migrations
+pnpm db:migrate    # Apply migrations
+pnpm db:push       # Push schema to DB
+pnpm db:pull       # Pull schema from DB
+pnpm db:studio     # Open Drizzle Studio
 ```
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
+## Authentication
 
-# Demo files
+Configure Better Auth:
 
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
+1. Generate secret in `.env.local`:
 
-# Learn More
+```bash
+pnpm dlx @better-auth/cli secret
+```
 
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+2. Configure in `src/lib/auth.ts`:
 
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+```typescript
+import { betterAuth } from "better-auth"
+import { Pool } from "pg"
+
+export const auth = betterAuth({
+  database: new Pool({
+    connectionString: process.env.DATABASE_URL,
+  }),
+})
+```
+
+3. Run migrations:
+
+```bash
+pnpm dlx @better-auth/cli migrate
+```
+
+## Linting & Formatting
+
+```bash
+pnpm lint    # Check code
+pnpm format  # Format code
+pnpm check   # Full verification
+```
+
+## Testing
+
+```bash
+pnpm test    # Run tests with Vitest
+```
+
+## Deployment
+
+Production build:
+
+```bash
+pnpm build
+```
+
+Output is in `dist/` as a self-contained Node server:
+
+```bash
+node dist/server/index.mjs
+```
+
+Compatible with any Node host (Render, Fly.io, your own VPS, etc.).
+
+For specific presets (Vercel, Netlify, Cloudflare, AWS Lambda): https://v3.nitro.build/deploy
+
+## Learn More
+
+- [TanStack Start](https://tanstack.com/start) - Official docs
+- [TanStack Router](https://tanstack.com/router) - Routing
+- [TanStack Query](https://tanstack.com/query) - Server state management
+- [Drizzle ORM](https://orm.drizzle.team/) - Typed ORM for PostgreSQL
+- [Better Auth](https://www.better-auth.com/) - Authentication
+- [shadcn/ui](https://ui.shadcn.com/) - UI Components
