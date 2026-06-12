@@ -57,10 +57,10 @@ function IndexPage() {
 	}, []);
 
 	return (
-		<div className="min-h-screen">
+		<div className="min-h-screen flex flex-col">
 			<AppHeader />
 			<Toaster theme="dark" position="top-right" richColors />
-			<main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+			<main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
 				<section className="text-center max-w-2xl mx-auto space-y-3">
 					<div className="inline-block text-xs uppercase tracking-widest text-primary border border-primary/30 rounded-full px-3 py-1">
 						HEADERS · SCORING · EXPORT
