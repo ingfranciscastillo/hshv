@@ -4,6 +4,10 @@ import { tanstackStartCookies } from "better-auth/tanstack-start";
 
 import { db } from "#/db";
 
+if (!process.env.APP_URL) {
+	throw new Error("APP_URL is not defined");
+}
+
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
@@ -24,7 +28,7 @@ export const auth = betterAuth({
 		useSecureCookies: process.env.NODE_ENV === "production",
 		cookiePrefix: "hshv",
 	},
-	trustedOrigins: [process.env.APP_URL!],
+	trustedOrigins: [process.env.APP_URL],
 	rateLimit: {
 		enabled: true,
 		window: 10,
