@@ -67,10 +67,6 @@ function IndexPage() {
 		},
 	});
 
-	useEffect(() => {
-		document.documentElement.classList.add("dark");
-	}, []);
-
 	return (
 		<div className="min-h-screen flex flex-col">
 			<AppHeader />

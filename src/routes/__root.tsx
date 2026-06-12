@@ -1,5 +1,6 @@
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
+	ClientOnly,
 	createRootRouteWithContext,
 	HeadContent,
 	Link,
@@ -135,16 +136,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootShell({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" className="dark">
 			<head>
-				<script suppressHydrationWarning>
-					{`document.documentElement.classList.add('dark')`}
-				</script>
 				<HeadContent />
 			</head>
 			<body>
-				<div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
-					<Suspense fallback={null}>
+				<div
+					style={{
+						position: "fixed",
+						inset: 0,
+						zIndex: 0,
+						background: "#1a1f2e",
+					}}
+				>
+					<ClientOnly fallback={null}>
 						<FaultyTerminalClient
 							scale={1.5}
 							gridMul={[2, 1]}
@@ -161,7 +166,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 							pageLoadAnimation
 							brightness={0.6}
 						/>
-					</Suspense>
+					</ClientOnly>
 				</div>
 
 				<div style={{ position: "relative", zIndex: 1 }}>{children}</div>
