@@ -1,3 +1,4 @@
+import { SiBuymeacoffee, SiGithub } from "@icons-pack/react-simple-icons";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -117,8 +118,28 @@ function IndexPage() {
 					</section>
 				)}
 			</main>
-			<footer className="text-center text-xs text-muted-foreground py-8">
-				Construido con TanStack Start · Reporte exportable en JSON y HTML
+			<footer className="text-center text-xs text-muted-foreground py-8 flex flex-col items-center gap-3">
+				<div className="flex items-center gap-4">
+					<a
+						href="https://github.com/ingfranciscastillo"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="flex items-center gap-1.5 hover:text-primary transition-colors"
+					>
+						<SiGithub className="size-3.5" />
+						GitHub
+					</a>
+					<span className="opacity-30">·</span>
+					<a
+						href="https://buymeacoffee.com/ingfranciscastillo"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="flex items-center gap-1.5 hover:text-primary transition-colors"
+					>
+						<SiBuymeacoffee className="size-3.5" />
+						Buy me a coffee
+					</a>
+				</div>
 			</footer>
 		</div>
 	);
