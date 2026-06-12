@@ -5,5 +5,5 @@ trustPolicy: no-downgrade
 
 trustPolicyExclude:
   - undici-types
-  - tinyexec
   - semver
+  - esbuild
