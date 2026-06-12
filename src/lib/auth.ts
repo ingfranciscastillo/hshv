@@ -24,11 +24,11 @@ export const auth = betterAuth({
 		useSecureCookies: process.env.NODE_ENV === "production",
 		cookiePrefix: "hshv",
 	},
-	trustedOrigins: ["http://localhost:3000", "https://hshv.dev"],
+	trustedOrigins: [process.env.APP_URL!],
 	rateLimit: {
 		enabled: true,
 		window: 10,
-		max: 100,
+		max: 30,
 		customRules: {
 			"/api/auth/sign-in/email": {
 				window: 60,
