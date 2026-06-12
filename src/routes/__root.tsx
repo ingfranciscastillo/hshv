@@ -8,20 +8,9 @@ import {
 	Scripts,
 	useRouter,
 } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
-import TanStackQueryDevtoolsConfig from "../integrations/tanstack-query/devtools";
+import { lazy } from "react";
 import appCss from "../styles.css?url";
 
-const TanStackDevtools = lazy(() =>
-	import("@tanstack/react-devtools").then((m) => ({
-		default: m.TanStackDevtools,
-	})),
-);
-const TanStackRouterDevtoolsPanel = lazy(() =>
-	import("@tanstack/react-router-devtools").then((m) => ({
-		default: m.TanStackRouterDevtoolsPanel,
-	})),
-);
 const FaultyTerminalClient = lazy(() =>
 	import("@/components/FaultyTerminalClient").then((m) => ({
 		default: m.default,
@@ -112,8 +101,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 					"Analiza los headers HTTP de cualquier sitio y obtén un reporte de seguridad.",
 			},
 			{ property: "og:type", content: "website" },
-			{ name: "twitter:card", content: "summary" },
-			{ name: "twitter:site", content: "@Lovable" },
 		],
 		links: [
 			{
@@ -170,20 +157,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
 				</div>
 
 				<div style={{ position: "relative", zIndex: 1 }}>{children}</div>
-				<Suspense fallback={null}>
-					<TanStackDevtools
-						config={{
-							position: "bottom-right",
-						}}
-						plugins={[
-							{
-								name: "Tanstack Router",
-								render: <TanStackRouterDevtoolsPanel />,
-							},
-							TanStackQueryDevtoolsConfig,
-						]}
-					/>
-				</Suspense>
 				<Scripts />
 			</body>
 		</html>
