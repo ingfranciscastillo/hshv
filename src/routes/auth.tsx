@@ -153,7 +153,14 @@ function AuthPage() {
 										placeholder="Mínimo 8 caracteres"
 									/>
 								</div>
-								<Button type="submit" className="w-full" disabled={loading}>
+								<Button
+									type="submit"
+									className="w-full"
+									disabled={loading}
+									aria-label={
+										tab === "login" ? "Iniciar sesión" : "Crear cuenta"
+									}
+								>
 									{loading && <Loader2 className="size-4 animate-spin" />}
 									{tab === "login" ? "Entrar" : "Registrarme"}
 								</Button>

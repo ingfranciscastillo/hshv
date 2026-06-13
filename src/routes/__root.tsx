@@ -45,8 +45,14 @@ function NotFoundComponent() {
 	);
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-	console.error(error);
+function ErrorComponent({
+	error: _error,
+	reset,
+}: {
+	error: Error;
+	reset: () => void;
+}) {
+	// Error logged server-side only
 	const router = useRouter();
 
 	return (
@@ -113,6 +119,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				rel: "stylesheet",
 				href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap",
 			},
+			{ rel: "canonical", href: "https://hshv.vercel.app/" },
 		],
 	}),
 	shellComponent: RootShell,
@@ -123,7 +130,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootShell({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en" className="dark">
+		<html lang="es" className="dark">
 			<head>
 				<HeadContent />
 			</head>

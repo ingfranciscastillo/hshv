@@ -71,7 +71,16 @@ function IndexPage() {
 		<div className="min-h-screen flex flex-col">
 			<AppHeader />
 			<Toaster theme="dark" position="top-right" richColors />
-			<main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+			<main
+				id="main-content"
+				className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8"
+			>
+				<a
+					href="#main-content"
+					className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded"
+				>
+					Saltar al contenido
+				</a>
 				<section className="text-center max-w-2xl mx-auto space-y-3">
 					<div className="inline-block text-xs uppercase tracking-widest text-primary border border-primary/30 rounded-full px-3 py-1">
 						HEADERS · SCORING · EXPORT
