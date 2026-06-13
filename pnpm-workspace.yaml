@@ -7,5 +7,5 @@ trustPolicyExclude:
   - undici-types
   - semver
 
-onlyBuiltDependencies:
-  - esbuild
+overrides:
+  "esbuild": "0.28.1"
