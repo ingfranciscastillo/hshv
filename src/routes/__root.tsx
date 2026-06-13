@@ -136,6 +136,26 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			{ rel: "canonical", href: "https://hshv.vercel.app/" },
 			{ rel: "dns-prefetch", href: "https://api.firecrawl.dev" },
 		],
+		script: [
+			{
+				type: "application/ld+json",
+				children: JSON.stringify({
+					"@context": "https://schema.org",
+					"@type": "WebApplication",
+					name: "HTTP Security Headers Validator",
+					description:
+						"Analiza los headers HTTP de cualquier sitio, detecta riesgos y obtén recomendaciones accionables.",
+					url: "https://hshv.vercel.app/",
+					applicationCategory: "SecurityApplication",
+					operatingSystem: "Any",
+					offers: {
+						"@type": "Offer",
+						price: "0",
+						priceCurrency: "USD",
+					},
+				}),
+			},
+		],
 	}),
 	shellComponent: RootShell,
 	component: RootComponent,
