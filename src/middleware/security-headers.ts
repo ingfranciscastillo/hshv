@@ -29,6 +29,9 @@ export const securityHeadersMiddleware = createMiddleware().server(
 				"form-action 'self'",
 			].join("; "),
 		);
+		setResponseHeader("Cross-Origin-Opener-Policy", "same-origin");
+		setResponseHeader("Cross-Origin-Embedder-Policy", "require-corp");
+		setResponseHeader("Cross-Origin-Resource-Policy", "same-origin");
 		return next();
 	},
 );
