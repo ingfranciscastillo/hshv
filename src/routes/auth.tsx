@@ -61,7 +61,7 @@ function AuthPage() {
 				}
 
 				toast.success("Sesión iniciada");
-				navigate({ to: redirect || "/_authenticated/history" });
+				navigate({ to: redirect || "/history" });
 			} else {
 				const res = await authClient.signUp.email({
 					email: parsed.data.email,
