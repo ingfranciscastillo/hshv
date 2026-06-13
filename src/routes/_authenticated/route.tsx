@@ -1,12 +1,12 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { authClient } from "#/lib/auth-client";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { getSession } from "#/lib/auth.functions";
 
 export const Route = createFileRoute("/_authenticated")({
 	ssr: false,
 	beforeLoad: async (ctx) => {
-		const sessionData = await authClient.getSession();
+		const session = await getSession();
 
-		if (!sessionData || !("user" in sessionData)) {
+		if (!session) {
 			throw redirect({
 				to: "/auth",
 				search: {
@@ -16,12 +16,8 @@ export const Route = createFileRoute("/_authenticated")({
 		}
 
 		return {
-			user: sessionData.user,
+			user: session.user,
 		};
 	},
-	component: RouteComponent,
+	component: () => <Outlet />,
 });
-
-function RouteComponent() {
-	return <div>Hello "/_authenticated"!</div>;
-}
