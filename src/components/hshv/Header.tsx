@@ -5,8 +5,8 @@ import { authClient } from "#/lib/auth-client";
 export function AppHeader() {
 	const { data: session, isPending } = authClient.useSession();
 
-	const handleSignOut = () => {
-		void authClient.signOut();
+	const handleSignOut = async () => {
+		void (await authClient.signOut());
 	};
 
 	return (
