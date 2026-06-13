@@ -26,7 +26,10 @@ export function UrlForm({ onSubmit, loading }: Props) {
 		<form onSubmit={handle} className="space-y-4">
 			<div className="flex flex-col gap-3 sm:flex-row">
 				<div className="relative flex-1">
-					<Shield className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-primary" />
+					<Shield
+						className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-primary"
+						aria-hidden="true"
+					/>
 					<Input
 						value={url}
 						onChange={(e) => setUrl(e.target.value)}
@@ -43,7 +46,11 @@ export function UrlForm({ onSubmit, loading }: Props) {
 					size="lg"
 					className="h-12 px-8 font-semibold"
 				>
-					{loading ? <Loader2 className="size-4 animate-spin" /> : "Analizar"}
+					{loading ? (
+						<Loader2 className="size-4 animate-spin" aria-hidden="true" />
+					) : (
+						"Analizar"
+					)}
 				</Button>
 			</div>
 			<div className="flex items-center gap-3">

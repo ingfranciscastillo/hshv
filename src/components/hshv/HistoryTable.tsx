@@ -24,7 +24,7 @@ export function HistoryTable({
 					{items.length} análisis
 				</div>
 				<Button variant="ghost" size="sm" onClick={onClear}>
-					<Trash2 className="size-4 mr-1" /> Limpiar
+					<Trash2 className="size-4 mr-1" aria-hidden="true" /> Limpiar
 				</Button>
 			</div>
 			<div className="overflow-x-auto">

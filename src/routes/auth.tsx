@@ -176,7 +176,7 @@ function AuthPage() {
 							to="/"
 							className="flex flex-row items-center space-x-2 justify-center hover:text-primary"
 						>
-							<ArrowLeft />
+							<ArrowLeft aria-hidden="true" />
 							<span>Volver</span>
 						</Link>
 					</p>

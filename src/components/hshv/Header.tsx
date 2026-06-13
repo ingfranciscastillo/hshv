@@ -13,7 +13,7 @@ export function AppHeader() {
 		<header className="sticky backdrop-blur-xs border-b border-border top-0 z-10">
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
 				<Link to="/" className="flex items-center gap-2 font-bold">
-					<ShieldCheck className="size-5 text-primary" />
+					<ShieldCheck className="size-5 text-primary" aria-hidden="true" />
 					<span style={{ fontFamily: "Space Grotesk, sans-serif" }}>HSHV</span>
 					<span className="text-xs text-muted-foreground font-normal hidden sm:inline">
 						/ HTTP Security Headers Validator
@@ -31,7 +31,7 @@ export function AppHeader() {
 						to="/history"
 						className="px-3 py-1.5 rounded-md hover:bg-secondary [&.active]:text-primary flex items-center gap-1"
 					>
-						<History className="size-4" /> Historial
+						<History className="size-4" aria-hidden="true" /> Historial
 					</Link>
 					{session?.user ? (
 						<>
@@ -43,7 +43,7 @@ export function AppHeader() {
 								onClick={handleSignOut}
 								className="px-3 py-1.5 rounded-md hover:bg-secondary flex items-center gap-1 cursor-pointer"
 							>
-								<LogOut className="size-4" /> Salir
+								<LogOut className="size-4" aria-hidden="true" /> Salir
 							</button>
 						</>
 					) : !isPending ? (
@@ -51,7 +51,7 @@ export function AppHeader() {
 							to="/auth"
 							className="px-3 py-1.5 rounded-md hover:bg-secondary [&.active]:text-primary flex items-center gap-1"
 						>
-							<LogIn className="size-4" /> Acceder
+							<LogIn className="size-4" aria-hidden="true" /> Acceder
 						</Link>
 					) : null}
 				</nav>

@@ -30,7 +30,8 @@ export const DashboardCards = memo(function DashboardCards({
 		<div className="grid gap-4 sm:grid-cols-3">
 			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
 				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
-					<Activity className="size-4 text-primary" /> Análisis
+					<Activity className="size-4 text-primary" aria-hidden="true" />{" "}
+					Análisis
 				</div>
 				<div
 					className="mt-2 text-4xl font-bold tabular-nums"
@@ -41,7 +42,8 @@ export const DashboardCards = memo(function DashboardCards({
 			</Card>
 			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
 				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
-					<TrendingUp className="size-4 text-primary" /> Score promedio
+					<TrendingUp className="size-4 text-primary" aria-hidden="true" />{" "}
+					Score promedio
 				</div>
 				<div
 					className="mt-2 text-4xl font-bold tabular-nums"
@@ -52,7 +54,8 @@ export const DashboardCards = memo(function DashboardCards({
 			</Card>
 			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
 				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
-					<AlertOctagon className="size-4 text-primary" /> Headers más ausentes
+					<AlertOctagon className="size-4 text-primary" aria-hidden="true" />{" "}
+					Headers más ausentes
 				</div>
 				{stats.topMissing.length ? (
 					<ul className="mt-2 space-y-1 text-sm">
