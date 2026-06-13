@@ -18,7 +18,7 @@ export function HistoryTable({
 		);
 	}
 	return (
-		<div className="bg-transparent border border-border rounded-lg overflow-hidden">
+		<div className="bg-transparent backdrop-blur-xs border border-border rounded-lg overflow-hidden">
 			<div className="flex items-center justify-between p-3 border-b border-border">
 				<div className="text-sm text-muted-foreground">
 					{items.length} análisis

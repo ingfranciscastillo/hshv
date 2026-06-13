@@ -110,7 +110,7 @@ function IndexPage() {
 						{FEATURES.map((f) => (
 							<div
 								key={f.title}
-								className="p-5 rounded-lg border border-border"
+								className="p-5 rounded-lg border border-border backdrop-blur-xs"
 							>
 								<div className="text-sm font-bold text-primary">{f.title}</div>
 								<div className="text-sm text-muted-foreground mt-1">

@@ -28,7 +28,7 @@ export const DashboardCards = memo(function DashboardCards({
 
 	return (
 		<div className="grid gap-4 sm:grid-cols-3">
-			<Card className="p-5 bg-transparent border-border">
+			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
 				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
 					<Activity className="size-4 text-primary" /> Análisis
 				</div>
@@ -39,7 +39,7 @@ export const DashboardCards = memo(function DashboardCards({
 					{stats.total}
 				</div>
 			</Card>
-			<Card className="p-5 bg-transparent border-border">
+			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
 				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
 					<TrendingUp className="size-4 text-primary" /> Score promedio
 				</div>
@@ -50,7 +50,7 @@ export const DashboardCards = memo(function DashboardCards({
 					{stats.avg}
 				</div>
 			</Card>
-			<Card className="p-5 bg-transparent border-border">
+			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
 				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
 					<AlertOctagon className="size-4 text-primary" /> Headers más ausentes
 				</div>

@@ -31,7 +31,7 @@ export function ScoreCard({ report }: { report: AnalysisReport }) {
 	const meta = LEVELS[report.level];
 	return (
 		<Card
-			className={`p-6 sm:p-8 bg-transparent border-border animate-in fade-in slide-in-from-bottom-2`}
+			className={`p-6 sm:p-8 bg-transparent backdrop-blur-xs border-border animate-in fade-in slide-in-from-bottom-2`}
 		>
 			<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
 				<div>

@@ -38,7 +38,7 @@ export function HeaderRow({ f }: { f: HeaderFinding }) {
 	const Icon = s.icon;
 	return (
 		<div
-			className={`p-4 sm:p-5 bg-transparent border border-border border-l-4 ${s.border} rounded-lg`}
+			className={`p-4 sm:p-5 bg-transparent backdrop-blur-xs border border-border border-l-4 ${s.border} rounded-lg`}
 		>
 			<div className="flex items-start justify-between gap-4 flex-wrap">
 				<div className="flex items-center gap-3">

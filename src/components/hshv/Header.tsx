@@ -10,7 +10,7 @@ export function AppHeader() {
 	};
 
 	return (
-		<header className="sticky top-0 z-10">
+		<header className="sticky backdrop-blur-xs border-b border-border top-0 z-10">
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
 				<Link to="/" className="flex items-center gap-2 font-bold">
 					<ShieldCheck className="size-5 text-primary" />
