@@ -1,6 +1,6 @@
 # hshv
 
-Analizador de headers HTTP con puntuación de seguridad y recomendaciones.
+> Analizador de headers HTTP con puntuación de seguridad y recomendaciones.
 
 <!-- README-I18N:START -->
 
@@ -8,10 +8,13 @@ Analizador de headers HTTP con puntuación de seguridad y recomendaciones.
 
 <!-- README-I18N:END -->
 
-![TanStack Start](https://img.shields.io/badge/TanStack%20Start-latest-FF3E00?style=flat-square)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.1-38B2AC?style=flat-square)
-![Better Auth](https://img.shields.io/badge/Better%20Auth-1.5-FF477E?style=flat-square)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-1e3a8a?style=for-the-badge&logo=terminal)](https://hshv.vercel.app/)
+[![behance](https://img.shields.io/badge/behance-1769FF?style=for-the-badge&logo=behance&logoColor=white)](https://www.behance.net/ingfranciscastillo)
+[![linkedin](https://img.shields.io/badge/linkedin-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/ingfranciscastillo)
+[![github_stars](https://img.shields.io/github/stars/ingfranciscastillo/hshv?style=for-the-badge)](https://github.com/ingfranciscastillo/hshv/stargazers)
+[![last_commit](https://img.shields.io/github/last-commit/ingfranciscastillo/hshv?style=for-the-badge)](https://github.com/ingfranciscastillo/hshv/commits/main)
+
+![Preview](./918_1x_shots_so.png)
 
 ## Qué Hace Este Proyecto
 
@@ -39,7 +42,7 @@ pnpm dev
 Para cada header HTTP de seguridad, el sistema muestra:
 
 | Campo | Descripción |
-|-------|-------------|
+| ------- | ------------- |
 | **Estado** | ✅ Seguro \| ⚠️ Mejorable \| ❌ Ausente \| 🚨 Inseguro |
 | **Valor detectado** | El valor actual del header o "No detectado" |
 | **Descripción técnica** | Explicación del propósito del header |
@@ -48,7 +51,7 @@ Para cada header HTTP de seguridad, el sistema muestra:
 
 **Ejemplo de evaluación:**
 
-```
+```text
 Header: X-Frame-Options
 Estado: ❌ Ausente
 
@@ -69,6 +72,7 @@ Genera una puntuación global de 0-100:
 | 90-100 | ✨ Excelente | Configuración de seguridad óptima |
 
 Incluye:
+
 - Score total numérico
 - Barra visual con gradiente de color
 - Resumen ejecutivo del estado de seguridad
@@ -76,12 +80,14 @@ Incluye:
 ### Exportación
 
 Descarga reportes en múltiples formatos:
+
 - **HTML**: Reporte completo visualizable en cualquier navegador
 - **JSON**: Datos estructurados para integración con otras herramientas
 
 ### Historial
 
 Almacena los análisis realizados:
+
 - Fecha y hora del análisis
 - URL analizada
 - Puntuación obtenida
@@ -90,142 +96,11 @@ Almacena los análisis realizados:
 ### Dashboard
 
 Panel de estadísticas:
+
 - Total de análisis realizados
 - Promedio de puntuaciones
 - Headers más frecuentemente ausentes
 - Tendencias de seguridad
-
-## Routing
-
-Este proyecto usa [TanStack Router](https://tanstack.com/router) con routing basado en archivos en `src/routes`.
-
-### Añadir una Ruta
-
-Crea un nuevo archivo en `./src/routes`:
-
-```tsx
-// src/routes/nueva-ruta.tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/nueva-ruta')({
-  component: NuevaRutaComponent,
-})
-
-function NuevaRutaComponent() {
-  return <div>Nueva ruta</div>
-}
-```
-
-### Añadir Links
-
-```tsx
-import { Link } from "@tanstack/react-router"
-
-<Link to="/about">Acerca de</Link>
-```
-
-## Server Functions
-
-Funciones server-side que se llaman desde cliente:
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getAnalysis = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  // Tu código de servidor aquí
-  return { result: 'data' }
-})
-```
-
-## API Routes
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/endpoint')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hola' }),
-    },
-  },
-})
-```
-
-## Base de Datos
-
-Gestión de datos con Drizzle ORM:
-
-```bash
-pnpm db:generate   # Generar migraciones
-pnpm db:migrate    # Aplicar migraciones
-pnpm db:push       # Push schema a DB
-pnpm db:pull       # Pull schema desde DB
-pnpm db:studio     # Abrir Drizzle Studio
-```
-
-## Autenticación
-
-Configura Better Auth:
-
-1. Genera el secret en `.env.local`:
-
-```bash
-pnpm dlx @better-auth/cli secret
-```
-
-2. Configura en `src/lib/auth.ts`:
-
-```typescript
-import { betterAuth } from "better-auth"
-import { Pool } from "pg"
-
-export const auth = betterAuth({
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-  }),
-})
-```
-
-3. Ejecuta migraciones:
-
-```bash
-pnpm dlx @better-auth/cli migrate
-```
-
-## Linting & Formatting
-
-```bash
-pnpm lint    # Verificar código
-pnpm format  # Formatear código
-pnpm check   # Verificación completa
-```
-
-## Testing
-
-```bash
-pnpm test    # Ejecutar tests con Vitest
-```
-
-## Deployment
-
-Build para producción:
-
-```bash
-pnpm build
-```
-
-El output está en `dist/` como un servidor Node autocontenido:
-
-```bash
-node dist/server/index.mjs
-```
-
-Compatible con cualquier host Node (Render, Fly.io, VPS propio).
-
-Para presets específicos (Vercel, Netlify, Cloudflare, AWS Lambda): https://v3.nitro.build/deploy
 
 ## Aprender Más
 
