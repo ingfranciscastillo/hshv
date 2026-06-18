@@ -8,8 +8,9 @@ HTTP headers analyzer with security scoring and recommendations.
 
 <!-- README-I18N:END -->
 
+![GitHub Created At](https://img.shields.io/github/created-at/ingfranciscastillo/hshv?style=for-the-badge)
 [![github_stars](https://img.shields.io/badge/github_stars-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ingfranciscastillo/hshv/stargazers)
-[![last_commit](https://img.shields.io/badge/last_commit-4285F4?style=for-the-badge&logo=git&logoColor=white)](https://github.com/ingfranciscastillo/hshv/commits/main)
+[![last_commit](https://img.shields.io/github/last-commit/ingfranciscastillo/hshv?style=for-the-badge)](https://github.com/ingfranciscastillo/hshv/commits/master)
 [![Live Demo](https://img.shields.io/badge/Live-Demo-1e3a8a?style=for-the-badge&logo=terminal)](https://hshv.vercel.app/)
 
 ![Preview](screenshots/Screenshot%202026-06-13%20at%2003-38-59%20HTTP%20Security%20Headers%20Validator%20—%20Analiza%20headers%20de%20seguridad.png)
@@ -39,7 +40,7 @@ Security analysis tool for HTTP headers. Evaluates the security configuration of
 
 ## Architecture
 
-```
+```text
 User ──▶ TanStack Start SSR ──▶ Server Functions ──▶ Analysis Pipeline ──▶ Report
                 │                                          │
            Middleware                                  PostgreSQL / Drizzle
