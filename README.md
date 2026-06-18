@@ -92,6 +92,10 @@ pnpm db:push
 pnpm dev
 ```
 
+## Demo
+
+Try the live application at [hshv.vercel.app](https://hshv.vercel.app/)
+
 ## Documentation
 
 - [TanStack Start](https://tanstack.com/start) - Official docs
@@ -103,5 +107,11 @@ pnpm dev
 
 ## Contact
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/ingfranciscastillo)
-[![Behance](https://img.shields.io/badge/Behance-1769FF?style=flat-square&logo=behance&logoColor=white)](https://www.behance.net/ingfranciscastillo)
+<p align="center">
+  <a href="https://linkedin.com/in/ingfranciscastillo">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
+  </a>
+  <a href="https://www.behance.net/ingfranciscastillo">
+    <img src="https://img.shields.io/badge/Behance-1769FF?style=for-the-badge&logo=behance&logoColor=white" />
+  </a>
+</p>
