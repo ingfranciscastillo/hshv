@@ -1,6 +1,6 @@
-# hshv
+# HSHV - HTTP Security Headers Validator
 
-> HTTP headers analyzer with security scoring and recommendations.
+HTTP headers analyzer with security scoring and recommendations.
 
 <!-- README-I18N:START -->
 
@@ -8,17 +8,26 @@
 
 <!-- README-I18N:END -->
 
+[![github_stars](https://img.shields.io/badge/github_stars-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ingfranciscastillo/hshv/stargazers)
+[![last_commit](https://img.shields.io/badge/last_commit-4285F4?style=for-the-badge&logo=git&logoColor=white)](https://github.com/ingfranciscastillo/hshv/commits/main)
 [![Live Demo](https://img.shields.io/badge/Live-Demo-1e3a8a?style=for-the-badge&logo=terminal)](https://hshv.vercel.app/)
-[![behance](https://img.shields.io/badge/behance-1769FF?style=for-the-badge&logo=behance&logoColor=white)](https://www.behance.net/ingfranciscastillo)
-[![linkedin](https://img.shields.io/badge/linkedin-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/ingfranciscastillo)
-[![github_stars](https://img.shields.io/github/stars/ingfranciscastillo/hshv?style=for-the-badge)](https://github.com/ingfranciscastillo/hshv/stargazers)
-[![last_commit](https://img.shields.io/github/last-commit/ingfranciscastillo/hshv?style=for-the-badge)](https://github.com/ingfranciscastillo/hshv/commits/main)
 
-![Preview](./918_1x_shots_so.png)
+![Preview](screenshots/Screenshot%202026-06-13%20at%2003-38-59%20HTTP%20Security%20Headers%20Validator%20—%20Analiza%20headers%20de%20seguridad.png)
+![Preview](screenshots/Screenshot%202026-06-13%20at%2003-39-18%20HTTP%20Security%20Headers%20Validator%20—%20Analiza%20headers%20de%20seguridad.png)
 
 ## What This Does
 
 Security analysis tool for HTTP headers. Evaluates the security configuration of any website, generates detailed scores, and provides actionable recommendations to improve protection.
+
+## Features
+
+- Automatic HTTP header analysis
+- Security score from 0 to 100
+- Concrete recommendations for each header
+- Analysis history
+- Dashboard with metrics
+- HTML and JSON export
+- User authentication
 
 ## Tech Stack
 
@@ -28,82 +37,61 @@ Security analysis tool for HTTP headers. Evaluates the security configuration of
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
 - **Validation**: [Zod](https://zod.dev/) - Typed validation schemas
 
+## Architecture
+
+```
+User ──▶ TanStack Start SSR ──▶ Server Functions ──▶ Analysis Pipeline ──▶ Report
+                │                                          │
+           Middleware                                  PostgreSQL / Drizzle
+        CSRF + Security Headers                        + Better Auth (cookies)
+```
+
+### Middleware Chain
+
+Every request passes through two layers of middleware configured in [`src/start.ts`](src/start.ts): CSRF protection (applied to server functions) and security headers injection that sets CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and cross-origin isolation headers on every response.
+
+### Routing & Auth
+
+File-based routing powered by [TanStack Router](https://tanstack.com/router). Public routes (`/` for analysis, `/auth` for login/signup) and a guarded route (`/history` for dashboard) protected by [Better Auth](https://www.better-auth.com/) with cookie-based sessions. Auth schema lives in PostgreSQL via the [Drizzle ORM](https://orm.drizzle.team/) adapter at [`src/db/schema.ts`](src/db/schema.ts).
+
+### Analysis Pipeline
+
+The core analysis (server function at [`src/lib/headers/analyze.functions.ts`](src/lib/headers/analyze.functions.ts)) follows this flow:
+
+1. **SSRF Guard** – Blocks requests to private/internal IP ranges ([`src/lib/headers/ssrf.ts`](src/lib/headers/ssrf.ts))
+2. **Fetch** – Direct HTTP GET or Firecrawl API fallback
+3. **Rate Limit** – 15 requests/minute per IP (in-memory)
+4. **Rules Engine** – 11 weighted rules across 3 categories (critical, recommended, informational) at [`src/lib/headers/rules.ts`](src/lib/headers/rules.ts)
+5. **Scoring** – Weighted sum normalized to 0–100 with severity levels at [`src/lib/headers/scoring.ts`](src/lib/headers/scoring.ts)
+6. **Storage** – Reports saved to localStorage for history and dashboard
+
+### Client-side
+
+React application with [TanStack Query](https://tanstack.com/query) for server state, [shadcn/ui](https://ui.shadcn.com/) components, and an animated 3D terminal background rendered with [OGL](https://github.com/oframe/ogl) and [postprocessing](https://github.com/vanruesc/postprocessing). Analysis history and dashboard metrics are persisted client-side in localStorage.
+
+## Analyzed Headers
+
+- Content-Security-Policy (CSP)
+- Strict-Transport-Security (HSTS)
+- X-Frame-Options
+- X-Content-Type-Options
+- Referrer-Policy
+- Permissions-Policy
+- Cross-Origin-Opener-Policy
+- Cross-Origin-Embedder-Policy
+- Cross-Origin-Resource-Policy
+
 ## Getting Started
 
 ```bash
+git clone https://github.com/ingfranciscastillo/hshv.git
+cd hshv
 pnpm install
+pnpm db:push
 pnpm dev
 ```
 
-## Features
-
-### Headers Evaluation
-
-For each security HTTP header, the system shows:
-
-| Field | Description |
-| ------- | ------------- |
-| **Status** | ✅ Secure &#124; ⚠️ Needs Improvement &#124; ❌ Missing &#124; 🚨 Insecure |
-| **Detected Value** | Current header value or "Not detected" |
-| **Technical Description** | Explanation of the header's purpose |
-| **Potential Impact** | Security risks if not configured |
-| **Concrete Recommendation** | Exact code to fix the issue |
-
-**Evaluation example:**
-
-```text
-Header: X-Frame-Options
-Status: ❌ Missing
-
-Description: Prevents clickjacking attacks.
-Impact: An attacker could load the site in a malicious iframe.
-Recommendation: X-Frame-Options: DENY
-```
-
-### Scoring System
-
-Generates a global score from 0-100:
-
-| Score | Level | Description |
-|-------|-------|-------------|
-
-| 0-39 | 🔴 Critical | Very vulnerable configuration |
-| 40-69 | 🟡 Poor | Essential security measures missing |
-| 70-89 | 🟢 Acceptable | Basic implementation correct |
-| 90-100 | ✨ Excellent | Optimal security configuration |
-
-Includes:
-
-- Total numeric score
-- Visual bar with color gradient
-- Executive summary of security status
-
-### Export
-
-Download reports in multiple formats:
-
-- **HTML**: Complete report viewable in any browser
-- **JSON**: Structured data for integration with other tools
-
-### History
-
-Stores performed analyses:
-
-- Date and time of analysis
-- Analyzed URL
-- Obtained score
-- Quick access to previous reports
-
-### Dashboard
-
-Statistics panel:
-
-- Total analyses performed
-- Average scores
-- Most frequently missing headers
-- Security trends
-
-## Learn More
+## Documentation
 
 - [TanStack Start](https://tanstack.com/start) - Official docs
 - [TanStack Router](https://tanstack.com/router) - Routing
