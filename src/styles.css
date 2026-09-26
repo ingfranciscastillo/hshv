@@ -125,6 +125,8 @@
   --status-insecure: oklch(0.48 0.2 18);
 
   --grain-opacity: 0.045;
+  --scrollbar-thumb: oklch(0.2 0.012 255 / 28%);
+  --scrollbar-thumb-hover: oklch(0.2 0.012 255 / 45%);
 }
 
 /* Dark: ink paper, off-white text, bright teal accent. */
@@ -170,6 +172,8 @@
     --status-insecure: oklch(0.68 0.2 20);
 
     --grain-opacity: 0.035;
+    --scrollbar-thumb: oklch(0.93 0.006 250 / 22%);
+    --scrollbar-thumb-hover: oklch(0.93 0.006 250 / 38%);
   }
 }
 
@@ -189,6 +193,11 @@
   }
 
   html {
+    /* Thin themed scrollbar; stable gutter so the layout does not shift
+       when content grows past the viewport (e.g. when a report renders). */
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -219,6 +228,33 @@
   kbd,
   samp {
     font-family: var(--font-mono);
+  }
+
+  /* Nested scroll areas (report tables, code) match the page scrollbar. */
+  * {
+    scrollbar-width: thin;
+  }
+
+  /* Browsers without scrollbar-color (older Safari). */
+  @supports not (scrollbar-color: auto) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background: var(--scrollbar-thumb) padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover) padding-box;
+    }
   }
 
   ::selection {
