@@ -1,102 +1,149 @@
-# HSHV - HTTP Security Headers Validator
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./public/logo-dark.svg">
+    <img src="./public/logo.svg" alt="HSHV" height="64">
+  </picture>
+</p>
 
-Analizador de headers HTTP con puntuación de seguridad y recomendaciones.
+<p align="center">
+  Audita los headers de seguridad HTTP de cualquier sitio.<br>
+  Una puntuación de 0 a 100, el riesgo detrás de cada header y una corrección lista para copiar.
+</p>
 
 <!-- README-I18N:START -->
 
-[English](./README.md) | **Español**
+<p align="center"><a href="./README.md">English</a> | <strong>Español</strong></p>
 
 <!-- README-I18N:END -->
 
-![GitHub Created At](https://img.shields.io/github/created-at/ingfranciscastillo/hshv?style=for-the-badge)
-[![github_stars](https://img.shields.io/github/stars/ingfranciscastillo/hshv?style=for-the-badge)](https://github.com/ingfranciscastillo/hshv/stargazers)
-[![last_commit](https://img.shields.io/github/last-commit/ingfranciscastillo/hshv?style=for-the-badge)](https://github.com/ingfranciscastillo/hshv/commits/master)
-[![Live Demo](https://img.shields.io/badge/Live-Demo-1e3a8a?style=for-the-badge&logo=terminal)](https://hshv.vercel.app/)
+<p align="center">
+  <a href="https://hshv.vercel.app/"><img src="https://img.shields.io/badge/Live-hshv.vercel.app-1a7268?style=for-the-badge" alt="Sitio en vivo"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/ingfranciscastillo/hshv?style=for-the-badge" alt="Licencia MIT"></a>
+  <a href="https://github.com/ingfranciscastillo/hshv/commits/master"><img src="https://img.shields.io/github/last-commit/ingfranciscastillo/hshv?style=for-the-badge" alt="Último commit"></a>
+  <a href="https://github.com/ingfranciscastillo/hshv/stargazers"><img src="https://img.shields.io/github/stars/ingfranciscastillo/hshv?style=for-the-badge" alt="Estrellas en GitHub"></a>
+</p>
 
-![Preview](screenshots/Screenshot%202026-06-13%20at%2003-38-59%20HTTP%20Security%20Headers%20Validator%20—%20Analiza%20headers%20de%20seguridad.png)
-![Preview](screenshots/Screenshot%202026-06-13%20at%2003-39-18%20HTTP%20Security%20Headers%20Validator%20—%20Analiza%20headers%20de%20seguridad.png)
+## Descripción
 
-## Qué Hace Este Proyecto
-
-Herramienta de análisis de seguridad para headers HTTP. Evalúa la configuración de seguridad de cualquier sitio web, genera puntuaciones detalladas y proporciona recomendaciones accionables para mejorar la protección.
+HSHV (HTTP Security Headers Validator) solicita una URL desde el servidor, lee los headers de la respuesta y los evalúa según las buenas prácticas actuales. Cada header recibe un estado, una explicación del riesgo y una recomendación lista para pegar. Los reportes se exportan en JSON o HTML, y los usuarios con sesión tienen un historial con métricas agregadas.
 
 ## Funcionalidades
 
-- Análisis automático de headers HTTP
-- Score de seguridad de 0 a 100
-- Recomendaciones concretas para cada header
-- Historial de análisis
-- Dashboard con métricas
-- Exportación HTML y JSON
-- Autenticación de usuarios
+- **11 reglas ponderadas** entre headers críticos, recomendados e informativos
+- **Puntuación de seguridad de 0 a 100** con un nivel: excelente, aceptable, deficiente o crítico
+- **Hallazgos accionables**: valor detectado, riesgo y configuración recomendada por header
+- **Exportación** de cualquier reporte a JSON o HTML, o copia al portapapeles
+- **Historial y dashboard**: total de análisis, puntuación promedio y headers más ausentes
+- **Respaldo con Firecrawl** para sitios que bloquean las solicitudes directas desde el servidor
+- **Seguro por defecto**: protección SSRF, límite de solicitudes por IP, protección CSRF y headers de seguridad estrictos en la propia app
 
-## Tech Stack
-
-- **Framework**: [TanStack Start](https://tanstack.com/start) - SSR con React Router
-- **Auth**: [Better Auth](https://www.better-auth.com/) - Autenticación completa
-- **Database**: [Drizzle ORM](https://orm.drizzle.team/) + PostgreSQL
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
-- **Validation**: [Zod](https://zod.dev/) - Esquemas de validación tipados
-
-## Arquitectura
+## Cómo funciona
 
 ```text
-Usuario ──▶ TanStack Start SSR ──▶ Server Functions ──▶ Pipeline de Análisis ──▶ Reporte
-                │                                              │
-           Middleware                                     PostgreSQL / Drizzle
-        CSRF + Security Headers                           + Better Auth (cookies)
+URL ──▶ Protección SSRF ──▶ Fetch (directo o Firecrawl) ──▶ Motor de reglas ──▶ Puntuación ──▶ Reporte
 ```
 
-### Middleware Chain
+1. **Protección SSRF**: rechaza direcciones privadas, de loopback e internas ([`ssrf.ts`](src/lib/headers/ssrf.ts)).
+2. **Fetch**: solicita la página directamente, o mediante Firecrawl si está activado y la solicitud directa falla.
+3. **Límite de solicitudes**: máximo 15 análisis por minuto por IP.
+4. **Motor de reglas**: evalúa cada header y le asigna un estado: seguro, mejorable, ausente o inseguro ([`rules.ts`](src/lib/headers/rules.ts)).
+5. **Puntuación**: promedio ponderado normalizado de 0 a 100 ([`scoring.ts`](src/lib/headers/scoring.ts)).
 
-Cada solicitud pasa por dos capas de middleware configuradas en [`src/start.ts`](src/start.ts): protección CSRF (aplicada a server functions) e inyección de headers de seguridad que establece CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy y headers de aislamiento entre orígenes en cada respuesta.
+| Puntuación | Nivel |
+| --- | --- |
+| 90 a 100 | Excelente |
+| 70 a 89 | Aceptable |
+| 40 a 69 | Deficiente |
+| 0 a 39 | Crítico |
 
-### Routing & Auth
+## Headers analizados
 
-Enrutamiento basado en archivos con [TanStack Router](https://tanstack.com/router). Rutas públicas (`/` para análisis, `/auth` para inicio de sesión) y una ruta protegida (`/history` para el dashboard) por [Better Auth](https://www.better-auth.com/) con sesiones basadas en cookies. El esquema de autenticación vive en PostgreSQL mediante el adaptador de [Drizzle ORM](https://orm.drizzle.team/) en [`src/db/schema.ts`](src/db/schema.ts).
+| Header | Categoría | Peso |
+| --- | --- | ---: |
+| `Content-Security-Policy` | Crítico | 25 |
+| `Strict-Transport-Security` | Crítico | 20 |
+| `X-Frame-Options` | Crítico | 12 |
+| `X-Content-Type-Options` | Crítico | 8 |
+| `Referrer-Policy` | Crítico | 8 |
+| `Permissions-Policy` | Crítico | 7 |
+| `Cross-Origin-Opener-Policy` | Recomendado | 5 |
+| `Cross-Origin-Embedder-Policy` | Recomendado | 4 |
+| `Cross-Origin-Resource-Policy` | Recomendado | 4 |
+| `X-Powered-By` | Informativo | 4 |
+| `Server` | Informativo | 3 |
 
-### Pipeline de Análisis
+## Tech stack
 
-El análisis principal (server function en [`src/lib/headers/analyze.functions.ts`](src/lib/headers/analyze.functions.ts)) sigue este flujo:
+| Área | Herramientas |
+| --- | --- |
+| Framework | [TanStack Start](https://tanstack.com/start), [TanStack Router](https://tanstack.com/router), [TanStack Query](https://tanstack.com/query), React 19 |
+| Autenticación | [Better Auth](https://www.better-auth.com/) con sesiones en cookies |
+| Base de datos | PostgreSQL ([Neon](https://neon.tech/)) con [Drizzle ORM](https://orm.drizzle.team/) |
+| UI | [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Phosphor Icons](https://phosphoricons.com/) |
+| Tipografía | Newsreader, Geist y Geist Mono, servidas con [Fontsource](https://fontsource.org/) |
+| Validación | [Zod](https://zod.dev/) |
+| Herramientas | [Vite](https://vite.dev/), [Biome](https://biomejs.dev/), [Vitest](https://vitest.dev/) |
 
-1. **Guardia SSRF** – Bloquea solicitudes a rangos de IP privadas/internas ([`src/lib/headers/ssrf.ts`](src/lib/headers/ssrf.ts))
-2. **Fetch** – HTTP GET directo o Firecrawl API como respaldo
-3. **Rate Limit** – 15 solicitudes/minuto por IP (en memoria)
-4. **Motor de Reglas** – 11 reglas ponderadas en 3 categorías (critical, recommended, informational) en [`src/lib/headers/rules.ts`](src/lib/headers/rules.ts)
-5. **Puntuación** – Suma ponderada normalizada a 0–100 con niveles de severidad en [`src/lib/headers/scoring.ts`](src/lib/headers/scoring.ts)
-6. **Almacenamiento** – Reportes guardados en localStorage para historial y dashboard
+## Primeros pasos
 
-### Lado Cliente
+### Requisitos
 
-Aplicación React con [TanStack Query](https://tanstack.com/query) para estado del servidor, componentes [shadcn/ui](https://ui.shadcn.com/) y un fondo animado 3D tipo terminal renderizado con [OGL](https://github.com/oframe/ogl) y [postprocessing](https://github.com/vanruesc/postprocessing). El historial de análisis y las métricas del dashboard se persisten en localStorage.
+- [Node.js](https://nodejs.org/) 24 o superior
+- [pnpm](https://pnpm.io/)
+- Una base de datos PostgreSQL (sirve un proyecto gratuito de [Neon](https://neon.tech/))
 
-## Headers Analizados
-
-- Content-Security-Policy (CSP)
-- Strict-Transport-Security (HSTS)
-- X-Frame-Options
-- X-Content-Type-Options
-- Referrer-Policy
-- Permissions-Policy
-- Cross-Origin-Opener-Policy
-- Cross-Origin-Embedder-Policy
-- Cross-Origin-Resource-Policy
-
-## Empezar
+### Instalación
 
 ```bash
 git clone https://github.com/ingfranciscastillo/hshv.git
 cd hshv
 pnpm install
+```
+
+Crea un archivo `.env.local` en la raíz del proyecto:
+
+| Variable | Obligatoria | Descripción |
+| --- | :---: | --- |
+| `DATABASE_URL` | Sí | Cadena de conexión de PostgreSQL |
+| `BETTER_AUTH_SECRET` | Sí | Secreto aleatorio para firmar las sesiones |
+| `BETTER_AUTH_URL` | Sí | URL base de la app, por ejemplo `http://localhost:3000` |
+| `APP_URL` | Sí | Origen público en el que confía Better Auth |
+| `FIRECRAWL_API_KEY` | No | Activa el respaldo con Firecrawl |
+
+Después aplica el esquema e inicia el servidor de desarrollo:
+
+```bash
 pnpm db:push
 pnpm dev
 ```
 
-## Documentación
+La app queda disponible en [http://localhost:3000](http://localhost:3000).
 
-- [TanStack Start](https://tanstack.com/start) - Documentación oficial
-- [TanStack Router](https://tanstack.com/router) - Routing
-- [TanStack Query](https://tanstack.com/query) - Gestión de estado server
-- [Drizzle ORM](https://orm.drizzle.team/) - ORM tipado para PostgreSQL
-- [Better Auth](https://www.better-auth.com/) - Autenticación
-- [shadcn/ui](https://ui.shadcn.com/) - Componentes UI
+> [!NOTE]
+> El historial de análisis se guarda en el `localStorage` del navegador, así que queda en el dispositivo donde se hizo cada análisis. La base de datos solo se usa para cuentas y sesiones.
+
+## Scripts
+
+| Comando | Descripción |
+| --- | --- |
+| `pnpm dev` | Inicia el servidor de desarrollo en el puerto 3000 |
+| `pnpm build` | Compila para producción |
+| `pnpm preview` | Sirve la build de producción |
+| `pnpm test` | Ejecuta las pruebas con Vitest |
+| `pnpm check` | Lint y formato con Biome |
+| `pnpm db:generate` | Genera migraciones de Drizzle |
+| `pnpm db:migrate` | Aplica las migraciones |
+| `pnpm db:push` | Envía el esquema a la base de datos |
+| `pnpm db:studio` | Abre Drizzle Studio |
+
+## Estructura del proyecto
+
+```text
+src/
+├── components/hshv/   # UI de la app: header, formulario, reporte, historial
+├── db/                # Cliente y esquema de Drizzle
+├── lib/headers/       # Protección SSRF, reglas, puntuación, exportación, almacenamiento
+├── middleware/        # Middleware de headers de seguridad
+├── routes/            # Rutas por archivos (/, /auth, /history, /api/auth)
+└── styles.css         # Tokens de diseño y tema
+```
