@@ -1,3 +1,5 @@
+import type { Text } from "@/lib/i18n";
+
 export type HeaderStatus = "secure" | "improvable" | "missing" | "insecure";
 export type HeaderCategory = "critical" | "recommended" | "informational";
 
@@ -6,9 +8,10 @@ export interface HeaderFinding {
 	category: HeaderCategory;
 	status: HeaderStatus;
 	detected: string | null;
-	description: string;
-	risk: string;
-	recommendation: string;
+	// Message references (or plain strings for reports saved before i18n).
+	description: Text;
+	risk: Text;
+	recommendation: Text;
 	score: number; // 0..1 contribution within its weight
 	weight: number;
 }

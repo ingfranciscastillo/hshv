@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { canonical } from "@/lib/site";
+import { m } from "@/paraglide/messages.js";
 
 export const Route = createFileRoute("/auth")({
 	validateSearch: z.object({
@@ -17,12 +18,8 @@ export const Route = createFileRoute("/auth")({
 	}),
 	head: () => ({
 		meta: [
-			{ title: "Acceso | HSHV" },
-			{
-				name: "description",
-				content:
-					"Inicia sesión o crea una cuenta para guardar tu historial de análisis de headers HTTP.",
-			},
+			{ title: m.meta_auth_title() },
+			{ name: "description", content: m.meta_auth_description() },
 			{ name: "robots", content: "noindex, follow" },
 		],
 		links: [{ rel: "canonical", href: canonical("/auth") }],
@@ -30,10 +27,11 @@ export const Route = createFileRoute("/auth")({
 	component: AuthPage,
 });
 
-const credsSchema = z.object({
-	email: z.email("Email inválido").trim().max(255),
-	password: z.string().min(8, "Mínimo 8 caracteres").max(72),
-});
+const credsSchema = () =>
+	z.object({
+		email: z.email(m.auth_err_email()).trim().max(255),
+		password: z.string().min(8, m.auth_err_password()).max(72),
+	});
 
 function AuthPage() {
 	const [tab, setTab] = useState<"login" | "signup">("login");
@@ -45,7 +43,7 @@ function AuthPage() {
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		const parsed = credsSchema.safeParse({ email, password });
+		const parsed = credsSchema().safeParse({ email, password });
 		if (!parsed.success) {
 			toast.error(parsed.error.issues[0].message);
 			return;
@@ -59,11 +57,11 @@ function AuthPage() {
 				});
 
 				if (res.error) {
-					toast.error(res.error.message || "Credenciales inválidas");
+					toast.error(res.error.message || m.auth_err_credentials());
 					return;
 				}
 
-				toast.success("Sesión iniciada");
+				toast.success(m.auth_signed_in());
 				navigate({ to: redirect || "/history" });
 			} else {
 				const res = await authClient.signUp.email({
@@ -73,7 +71,7 @@ function AuthPage() {
 				});
 
 				if (res.error) {
-					toast.error(res.error.message || "Error al crear cuenta");
+					toast.error(res.error.message || m.auth_err_signup());
 					return;
 				}
 
@@ -82,9 +80,9 @@ function AuthPage() {
 				setPassword("");
 			}
 		} catch (err) {
-			const msg = err instanceof Error ? err.message : "Error";
+			const msg = err instanceof Error ? err.message : m.auth_err_generic();
 			toast.error(
-				msg.includes("Invalid login") ? "Credenciales inválidas" : msg,
+				msg.includes("Invalid login") ? m.auth_err_credentials() : msg,
 			);
 		} finally {
 			setLoading(false);
@@ -100,17 +98,18 @@ function AuthPage() {
 					<h1 className="pb-1 text-5xl leading-[1.08] sm:text-6xl">
 						{tab === "login" ? (
 							<>
-								Inicia <em>sesión.</em>
+								{m.auth_login_before()}
+								<em>{m.auth_login_emphasis()}</em>
 							</>
 						) : (
 							<>
-								Crea tu <em>cuenta.</em>
+								{m.auth_signup_before()}
+								<em>{m.auth_signup_emphasis()}</em>
 							</>
 						)}
 					</h1>
 					<p className="mt-5 max-w-[40ch] text-lg leading-relaxed text-muted-foreground">
-						Guarda tu historial de análisis y consúltalo desde cualquier
-						dispositivo.
+						{m.auth_subtitle()}
 					</p>
 				</div>
 
@@ -130,13 +129,13 @@ function AuthPage() {
 								value="login"
 								className="flex-none px-0 pb-3 text-[15px] font-normal"
 							>
-								Iniciar sesión
+								{m.auth_tab_login()}
 							</TabsTrigger>
 							<TabsTrigger
 								value="signup"
 								className="flex-none px-0 pb-3 text-[15px] font-normal"
 							>
-								Crear cuenta
+								{m.auth_tab_signup()}
 							</TabsTrigger>
 						</TabsList>
 
@@ -146,7 +145,7 @@ function AuthPage() {
 									htmlFor="email"
 									className="font-mono text-xs font-normal text-muted-foreground"
 								>
-									Email
+									{m.auth_email()}
 								</Label>
 								<Input
 									id="email"
@@ -164,7 +163,7 @@ function AuthPage() {
 									htmlFor="password"
 									className="font-mono text-xs font-normal text-muted-foreground"
 								>
-									Contraseña
+									{m.auth_password()}
 								</Label>
 								<Input
 									id="password"
@@ -180,7 +179,7 @@ function AuthPage() {
 									className="h-12 bg-card px-4 text-[15px] shadow-none dark:bg-card"
 								/>
 								<p id="password-help" className="text-xs text-muted-foreground">
-									Mínimo 8 caracteres.
+									{m.auth_password_help()}
 								</p>
 							</div>
 							<button
@@ -194,7 +193,9 @@ function AuthPage() {
 										aria-hidden="true"
 									/>
 								)}
-								{tab === "login" ? "Entrar" : "Registrarme"}
+								{tab === "login"
+									? m.auth_submit_login()
+									: m.auth_submit_signup()}
 							</button>
 						</form>
 

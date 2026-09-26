@@ -35,6 +35,7 @@ HSHV (HTTP Security Headers Validator) solicita una URL desde el servidor, lee l
 - **Exportación** de cualquier reporte a JSON o HTML, o copia al portapapeles
 - **Historial y dashboard**: total de análisis, puntuación promedio y headers más ausentes
 - **Respaldo con Firecrawl** para sitios que bloquean las solicitudes directas desde el servidor
+- **Español e inglés**, con URLs localizadas (`/` y `/en/`) y reportes que se muestran en el idioma de quien los ve
 - **Seguro por defecto**: protección SSRF, límite de solicitudes por IP, protección CSRF y headers de seguridad estrictos en la propia app
 
 ## Cómo funciona
@@ -81,6 +82,7 @@ URL ──▶ Protección SSRF ──▶ Fetch (directo o Firecrawl) ──▶ M
 | Base de datos | PostgreSQL ([Neon](https://neon.tech/)) con [Drizzle ORM](https://orm.drizzle.team/) |
 | UI | [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Phosphor Icons](https://phosphoricons.com/) |
 | Tipografía | Newsreader, Geist y Geist Mono, servidas con [Fontsource](https://fontsource.org/) |
+| i18n | [Paraglide JS](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) |
 | Validación | [Zod](https://zod.dev/) |
 | Herramientas | [Vite](https://vite.dev/), [Biome](https://biomejs.dev/), [Vitest](https://vitest.dev/) |
 
@@ -145,5 +147,11 @@ src/
 ├── lib/headers/       # Protección SSRF, reglas, puntuación, exportación, almacenamiento
 ├── middleware/        # Middleware de headers de seguridad
 ├── routes/            # Rutas por archivos (/, /auth, /history, /api/auth)
+├── server.ts          # Entrada del servidor con el middleware de Paraglide
 └── styles.css         # Tokens de diseño y tema
+messages/              # Traducciones: es.json (base) y en.json
+project.inlang/        # Configuración del proyecto de Paraglide
 ```
+
+> [!TIP]
+> Para añadir o editar una traducción, cambia la misma clave en `messages/es.json` y `messages/en.json`. Paraglide las compila como funciones tipadas en `src/paraglide/` en el siguiente `pnpm dev` o `pnpm build`.

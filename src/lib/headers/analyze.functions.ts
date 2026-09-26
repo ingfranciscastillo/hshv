@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestIP } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { appError } from "@/lib/errors";
 
 import { buildFindings } from "./rules";
 import { computeScore } from "./scoring";
@@ -37,9 +38,7 @@ function headersToObject(h: Headers): Record<string, string> {
 	return obj;
 }
 
-async function directFetch(
-	url: string,
-): Promise<{
+async function directFetch(url: string): Promise<{
 	headers: Record<string, string>;
 	status: number;
 	finalUrl: string;
@@ -57,18 +56,14 @@ async function directFetch(
 	};
 }
 
-async function firecrawlFetch(
-	url: string,
-): Promise<{
+async function firecrawlFetch(url: string): Promise<{
 	headers: Record<string, string>;
 	status: number;
 	finalUrl: string;
 }> {
 	const apiKey = process.env.FIRECRAWL_API_KEY;
 	if (!apiKey) {
-		throw new Error(
-			"Firecrawl no está configurado. Conecta el conector Firecrawl para habilitar este modo.",
-		);
+		throw appError("err_firecrawl_not_configured");
 	}
 	const res = await fetch("https://api.firecrawl.dev/v2/scrape", {
 		method: "POST",
@@ -79,7 +74,7 @@ async function firecrawlFetch(
 		body: JSON.stringify({ url, formats: ["rawHtml"], onlyMainContent: false }),
 		signal: AbortSignal.timeout(30_000),
 	});
-	if (!res.ok) throw new Error(`Firecrawl error ${res.status}`);
+	if (!res.ok) throw appError("err_firecrawl_failed", { status: res.status });
 	const json = (await res.json()) as
 		| { data?: { metadata?: Record<string, unknown> } }
 		| { metadata?: Record<string, unknown> };
@@ -108,13 +103,10 @@ export const analyzeUrl = createServerFn({ method: "POST" })
 				return "unknown";
 			}
 		})();
-		if (!rateCheck(ip))
-			throw new Error(
-				"Demasiadas solicitudes. Espera un minuto e intenta de nuevo.",
-			);
+		if (!rateCheck(ip)) throw appError("err_rate_limited");
 
 		const v = validateTargetUrl(data.url);
-		if (!v.ok) throw new Error(v.error);
+		if (!v.ok) throw appError(v.error);
 
 		let result: {
 			headers: Record<string, string>;
@@ -129,8 +121,8 @@ export const analyzeUrl = createServerFn({ method: "POST" })
 				result = await firecrawlFetch(v.url.toString());
 				source = "firecrawl";
 			} else {
-				const msg = err instanceof Error ? err.message : "Fallo de red";
-				throw new Error(`No se pudo conectar al sitio: ${msg}`);
+				const detail = err instanceof Error ? err.message : "network error";
+				throw appError("err_connect_failed", { detail });
 			}
 		}
 

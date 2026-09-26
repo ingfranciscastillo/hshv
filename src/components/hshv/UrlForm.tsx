@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { m } from "@/paraglide/messages.js";
 
 interface Props {
 	onSubmit: (url: string, useFirecrawl: boolean) => void;
@@ -28,7 +29,7 @@ export function UrlForm({ onSubmit, loading }: Props) {
 					htmlFor="target-url"
 					className="font-mono text-xs font-normal text-muted-foreground"
 				>
-					URL del sitio
+					{m.form_url_label()}
 				</Label>
 				<div className="flex flex-col gap-3 sm:flex-row">
 					<Input
@@ -54,11 +55,11 @@ export function UrlForm({ onSubmit, loading }: Props) {
 									className="size-4 animate-spin"
 									aria-hidden="true"
 								/>
-								Analizando
+								{m.form_submitting()}
 							</>
 						) : (
 							<>
-								Analizar
+								{m.form_submit()}
 								<ArrowRightIcon
 									className="size-[18px] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
 									aria-hidden="true"
@@ -79,7 +80,7 @@ export function UrlForm({ onSubmit, loading }: Props) {
 					htmlFor="fc"
 					className="cursor-pointer text-sm font-normal text-muted-foreground"
 				>
-					Reintentar con Firecrawl si el fetch directo falla
+					{m.form_firecrawl()}
 				</Label>
 			</div>
 		</form>

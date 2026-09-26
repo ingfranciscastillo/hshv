@@ -6,16 +6,13 @@ import { AppHeader } from "@/components/hshv/Header";
 import { HistoryTable } from "@/components/hshv/HistoryTable";
 import { clearHistory, loadHistory } from "@/lib/headers/storage";
 import type { AnalysisReport } from "@/lib/headers/types";
+import { m } from "@/paraglide/messages.js";
 
 export const Route = createFileRoute("/_authenticated/history")({
 	head: () => ({
 		meta: [
-			{ title: "Historial | HSHV" },
-			{
-				name: "description",
-				content:
-					"Tus análisis anteriores de headers HTTP, con métricas y registros.",
-			},
+			{ title: m.meta_history_title() },
+			{ name: "description", content: m.meta_history_description() },
 			{ name: "robots", content: "noindex, nofollow" },
 		],
 	}),
@@ -44,9 +41,11 @@ function HistoryPage() {
 			<AppHeader />
 			<main className="mx-auto w-full max-w-6xl flex-1 space-y-16 px-4 pt-14 pb-24 sm:px-8 sm:pt-20">
 				<div className="reveal">
-					<h1 className="text-5xl leading-[1.05] sm:text-6xl">Historial</h1>
+					<h1 className="text-5xl leading-[1.05] sm:text-6xl">
+						{m.history_title()}
+					</h1>
 					<p className="mt-4 max-w-[48ch] text-lg leading-relaxed text-muted-foreground">
-						Tus análisis anteriores, guardados en este navegador.
+						{m.history_subtitle()}
 					</p>
 				</div>
 				<div className="reveal" style={{ "--i": 1 } as React.CSSProperties}>

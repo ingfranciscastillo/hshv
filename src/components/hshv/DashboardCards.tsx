@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 import type { AnalysisReport } from "@/lib/headers/types";
+import { m } from "@/paraglide/messages.js";
 
 interface DashboardCardsProps {
 	items: AnalysisReport[];
@@ -27,14 +28,16 @@ export const DashboardCards = memo(function DashboardCards({
 	return (
 		<dl className="grid border-y border-rule sm:grid-cols-[1fr_1fr_1.6fr]">
 			<div className="py-6 sm:pr-8">
-				<dt className="font-mono text-xs text-muted-foreground">Análisis</dt>
+				<dt className="font-mono text-xs text-muted-foreground">
+					{m.stats_total()}
+				</dt>
 				<dd className="mt-3 font-serif text-6xl leading-none tabular-nums">
 					{stats.total}
 				</dd>
 			</div>
 			<div className="border-t border-border py-6 sm:border-t-0 sm:border-l sm:px-8">
 				<dt className="font-mono text-xs text-muted-foreground">
-					Score promedio
+					{m.stats_average()}
 				</dt>
 				<dd className="mt-3 flex items-end gap-2">
 					<span className="font-serif text-6xl leading-none tabular-nums">
@@ -47,7 +50,7 @@ export const DashboardCards = memo(function DashboardCards({
 			</div>
 			<div className="border-t border-border py-6 sm:border-t-0 sm:border-l sm:pl-8">
 				<dt className="font-mono text-xs text-muted-foreground">
-					Headers más ausentes
+					{m.stats_top_missing()}
 				</dt>
 				<dd className="mt-3">
 					{stats.topMissing.length ? (
@@ -60,7 +63,7 @@ export const DashboardCards = memo(function DashboardCards({
 							))}
 						</ol>
 					) : (
-						<p className="text-sm text-muted-foreground">Sin datos todavía.</p>
+						<p className="text-sm text-muted-foreground">{m.stats_no_data()}</p>
 					)}
 				</dd>
 			</div>

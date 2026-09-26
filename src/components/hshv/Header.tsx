@@ -1,5 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { authClient } from "#/lib/auth-client";
+import { m } from "@/paraglide/messages.js";
+import { getLocale, locales, localizeHref } from "@/paraglide/runtime.js";
 import { LogoMark } from "./LogoMark";
 
 const NAV_LINK =
@@ -27,10 +29,10 @@ export function AppHeader() {
 					</Link>
 					<nav className="flex items-center gap-5 text-sm sm:gap-7">
 						<Link to="/" className={NAV_LINK} activeOptions={{ exact: true }}>
-							Analizar
+							{m.nav_analyze()}
 						</Link>
 						<Link to="/history" className={NAV_LINK}>
-							Historial
+							{m.nav_history()}
 						</Link>
 						{session?.user ? (
 							<>
@@ -42,17 +44,54 @@ export function AppHeader() {
 									onClick={handleSignOut}
 									className="cursor-pointer py-1 text-muted-foreground transition-colors hover:text-foreground"
 								>
-									Salir
+									{m.nav_sign_out()}
 								</button>
 							</>
 						) : !isPending ? (
 							<Link to="/auth" className={NAV_LINK}>
-								Acceder
+								{m.nav_sign_in()}
 							</Link>
 						) : null}
+						<LanguageSwitcher />
 					</nav>
 				</div>
 			</div>
 		</header>
+	);
+}
+
+function LanguageSwitcher() {
+	// The router location is already de-localized (see the rewrite in router.tsx).
+	const href = useLocation({ select: (l) => l.pathname + l.searchStr });
+	const current = getLocale();
+
+	return (
+		<ul
+			aria-label={m.language_label()}
+			className="flex items-center gap-1.5 border-l border-border pl-5 font-mono text-xs sm:pl-7"
+		>
+			{locales.map((locale, i) => (
+				<li key={locale} className="flex items-center gap-1.5">
+					{i > 0 && (
+						<span aria-hidden="true" className="text-muted-foreground/50">
+							/
+						</span>
+					)}
+					<a
+						href={localizeHref(href, { locale })}
+						hrefLang={locale}
+						lang={locale}
+						aria-current={locale === current ? "true" : undefined}
+						className={
+							locale === current
+								? "text-foreground"
+								: "text-muted-foreground transition-colors hover:text-foreground"
+						}
+					>
+						{locale.toUpperCase()}
+					</a>
+				</li>
+			))}
+		</ul>
 	);
 }

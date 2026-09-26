@@ -10,24 +10,31 @@ import type {
 	HeaderCategory,
 	HeaderStatus,
 } from "@/lib/headers/types";
+import { m } from "@/paraglide/messages.js";
+
+// Labels are functions so they resolve in the current locale at render time.
 
 export const STATUS: Record<
 	HeaderStatus,
-	{ label: string; icon: Icon; text: string }
+	{ label: () => string; icon: Icon; text: string }
 > = {
 	secure: {
-		label: "Seguro",
+		label: m.status_secure,
 		icon: CheckCircleIcon,
 		text: "text-status-secure",
 	},
 	improvable: {
-		label: "Mejorable",
+		label: m.status_improvable,
 		icon: WarningCircleIcon,
 		text: "text-status-improvable",
 	},
-	missing: { label: "Ausente", icon: XCircleIcon, text: "text-status-missing" },
+	missing: {
+		label: m.status_missing,
+		icon: XCircleIcon,
+		text: "text-status-missing",
+	},
 	insecure: {
-		label: "Inseguro",
+		label: m.status_insecure,
 		icon: ShieldWarningIcon,
 		text: "text-status-insecure",
 	},
@@ -42,18 +49,18 @@ export const STATUS_ORDER: HeaderStatus[] = [
 
 export const LEVELS: Record<
 	AnalysisReport["level"],
-	{ label: string; text: string }
+	{ label: () => string; text: string }
 > = {
-	excellent: { label: "Excelente", text: "text-status-secure" },
-	acceptable: { label: "Aceptable", text: "text-primary" },
-	deficient: { label: "Deficiente", text: "text-status-improvable" },
-	critical: { label: "Crítico", text: "text-status-insecure" },
+	excellent: { label: m.level_excellent, text: "text-status-secure" },
+	acceptable: { label: m.level_acceptable, text: "text-primary" },
+	deficient: { label: m.level_deficient, text: "text-status-improvable" },
+	critical: { label: m.level_critical, text: "text-status-insecure" },
 };
 
-export const CATEGORY_TITLES: Record<HeaderCategory, string> = {
-	critical: "Críticos",
-	recommended: "Recomendados",
-	informational: "Informativos",
+export const CATEGORY_TITLES: Record<HeaderCategory, () => string> = {
+	critical: m.category_critical,
+	recommended: m.category_recommended,
+	informational: m.category_informational,
 };
 
 export const CATEGORIES: HeaderCategory[] = [
@@ -61,3 +68,8 @@ export const CATEGORIES: HeaderCategory[] = [
 	"recommended",
 	"informational",
 ];
+
+export const headersCount = (count: number) =>
+	count === 1
+		? m.headers_count_one({ count })
+		: m.headers_count_other({ count });

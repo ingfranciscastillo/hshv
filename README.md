@@ -35,6 +35,7 @@ HSHV (HTTP Security Headers Validator) fetches a URL on the server, reads its re
 - **Export** any report to JSON or HTML, or copy it to the clipboard
 - **History and dashboard**: total analyses, average score and most frequently missing headers
 - **Firecrawl fallback** for sites that block direct server-side requests
+- **Spanish and English**, with localized URLs (`/` and `/en/`) and reports that render in the viewer's language
 - **Hardened by default**: SSRF guard, per-IP rate limiting, CSRF protection and strict security headers on the app itself
 
 ## How it works
@@ -81,6 +82,7 @@ URL ──▶ SSRF guard ──▶ Fetch (direct or Firecrawl) ──▶ Rules e
 | Database | PostgreSQL ([Neon](https://neon.tech/)) with [Drizzle ORM](https://orm.drizzle.team/) |
 | UI | [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Phosphor Icons](https://phosphoricons.com/) |
 | Type | Newsreader, Geist and Geist Mono, self-hosted with [Fontsource](https://fontsource.org/) |
+| i18n | [Paraglide JS](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) |
 | Validation | [Zod](https://zod.dev/) |
 | Tooling | [Vite](https://vite.dev/), [Biome](https://biomejs.dev/), [Vitest](https://vitest.dev/) |
 
@@ -145,5 +147,11 @@ src/
 ├── lib/headers/       # SSRF guard, rules, scoring, export, storage
 ├── middleware/        # Security headers middleware
 ├── routes/            # File-based routes (/, /auth, /history, /api/auth)
+├── server.ts          # Server entry wrapped with the Paraglide middleware
 └── styles.css         # Design tokens and theme
+messages/              # Translations: es.json (base) and en.json
+project.inlang/        # Paraglide project settings
 ```
+
+> [!TIP]
+> To add or edit a translation, change the same key in `messages/es.json` and `messages/en.json`. Paraglide compiles them into typed functions in `src/paraglide/` on the next `pnpm dev` or `pnpm build`.

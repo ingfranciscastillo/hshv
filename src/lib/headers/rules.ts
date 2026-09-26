@@ -1,3 +1,4 @@
+import { msg, type Text } from "@/lib/i18n";
 import type { HeaderCategory, HeaderFinding, HeaderStatus } from "./types";
 
 type Eval = Omit<HeaderFinding, "name" | "category" | "weight">;
@@ -9,24 +10,28 @@ interface Rule {
 	evaluate: (value: string | null) => Eval;
 }
 
+// Texts are message references resolved on the client, so a stored report
+// renders in whichever locale the viewer uses. Header configurations are
+// language-neutral and stay as plain strings.
+
 const ok = (
-	detected: string,
-	description: string,
-	recommendation: string,
+	detected: string | null,
+	description: Text,
+	recommendation: Text,
 ): Eval => ({
 	status: "secure",
 	detected,
 	description,
-	risk: "Sin riesgo conocido con esta configuración.",
+	risk: msg("rule_ok_risk"),
 	recommendation,
 	score: 1,
 });
 
 const improvable = (
 	detected: string,
-	description: string,
-	risk: string,
-	recommendation: string,
+	description: Text,
+	risk: Text,
+	recommendation: Text,
 	score = 0.6,
 ): Eval => ({
 	status: "improvable",
@@ -38,9 +43,9 @@ const improvable = (
 });
 
 const missing = (
-	description: string,
-	risk: string,
-	recommendation: string,
+	description: Text,
+	risk: Text,
+	recommendation: Text,
 ): Eval => ({
 	status: "missing",
 	detected: null,
@@ -52,9 +57,9 @@ const missing = (
 
 const insecure = (
 	detected: string,
-	description: string,
-	risk: string,
-	recommendation: string,
+	description: Text,
+	risk: Text,
+	recommendation: Text,
 ): Eval => ({
 	status: "insecure",
 	detected,
@@ -70,12 +75,11 @@ export const RULES: Rule[] = [
 		category: "critical",
 		weight: 25,
 		evaluate: (v) => {
-			const desc =
-				"Define qué fuentes de contenido (scripts, estilos, imágenes, frames) puede cargar la página.";
+			const desc = msg("rule_csp_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Sin CSP, un atacante con XSS puede ejecutar scripts arbitrarios sin restricciones.",
+					msg("rule_csp_missing_risk"),
 					"Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'",
 				);
 			const lower = v.toLowerCase();
@@ -87,15 +91,11 @@ export const RULES: Rule[] = [
 				return improvable(
 					v,
 					desc,
-					"El uso de 'unsafe-inline', 'unsafe-eval' o comodines (*) reduce drásticamente la protección frente a XSS.",
-					"Eliminar 'unsafe-inline'/'unsafe-eval' y restringir dominios usando hashes o nonces.",
+					msg("rule_csp_unsafe_risk"),
+					msg("rule_csp_unsafe_rec"),
 					0.5,
 				);
-			return ok(
-				v,
-				desc,
-				"Mantener la política y revisar periódicamente nuevas directivas.",
-			);
+			return ok(v, desc, msg("rule_csp_ok_rec"));
 		},
 	},
 	{
@@ -103,12 +103,11 @@ export const RULES: Rule[] = [
 		category: "critical",
 		weight: 20,
 		evaluate: (v) => {
-			const desc =
-				"Obliga a los navegadores a usar HTTPS para todas las conexiones futuras al dominio.";
+			const desc = msg("rule_hsts_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Permite ataques de downgrade y MITM en la primera conexión sobre HTTP.",
+					msg("rule_hsts_missing_risk"),
 					"Strict-Transport-Security: max-age=63072000; includeSubDomains; preload",
 				);
 			const m = /max-age=(\d+)/i.exec(v);
@@ -117,15 +116,11 @@ export const RULES: Rule[] = [
 				return improvable(
 					v,
 					desc,
-					`max-age=${age} es menor a 6 meses; el navegador olvidará la política rápidamente.`,
-					"Usar al menos max-age=31536000 e idealmente includeSubDomains y preload.",
+					msg("rule_hsts_short_risk", { age }),
+					msg("rule_hsts_short_rec"),
 					0.6,
 				);
-			return ok(
-				v,
-				desc,
-				"Considerar añadir preload e incluirlo en hstspreload.org.",
-			);
+			return ok(v, desc, msg("rule_hsts_ok_rec"));
 		},
 	},
 	{
@@ -133,22 +128,21 @@ export const RULES: Rule[] = [
 		category: "critical",
 		weight: 12,
 		evaluate: (v) => {
-			const desc =
-				"Previene que la página sea embebida en iframes maliciosos (clickjacking).";
+			const desc = msg("rule_xfo_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Un atacante puede embeber el sitio en un iframe y engañar al usuario para que haga clics no deseados.",
+					msg("rule_xfo_missing_risk"),
 					"X-Frame-Options: DENY",
 				);
 			const u = v.toUpperCase();
 			if (u === "DENY" || u === "SAMEORIGIN")
-				return ok(v, desc, "Configuración correcta.");
+				return ok(v, desc, msg("rule_config_correct"));
 			return improvable(
 				v,
 				desc,
-				"Valor no estándar; algunos navegadores lo ignorarán.",
-				"Usar DENY o SAMEORIGIN.",
+				msg("rule_xfo_nonstandard_risk"),
+				msg("rule_xfo_nonstandard_rec"),
 				0.5,
 			);
 		},
@@ -158,19 +152,19 @@ export const RULES: Rule[] = [
 		category: "critical",
 		weight: 8,
 		evaluate: (v) => {
-			const desc =
-				"Impide que el navegador adivine (sniff) el tipo MIME de la respuesta.";
+			const desc = msg("rule_xcto_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Permite ataques tipo MIME sniffing que pueden convertir contenido en ejecutable.",
+					msg("rule_xcto_missing_risk"),
 					"X-Content-Type-Options: nosniff",
 				);
-			if (v.toLowerCase().trim() === "nosniff") return ok(v, desc, "Mantener.");
+			if (v.toLowerCase().trim() === "nosniff")
+				return ok(v, desc, msg("rule_keep"));
 			return insecure(
 				v,
 				desc,
-				"Valor distinto a 'nosniff' es inválido.",
+				msg("rule_xcto_invalid_risk"),
 				"X-Content-Type-Options: nosniff",
 			);
 		},
@@ -180,12 +174,11 @@ export const RULES: Rule[] = [
 		category: "critical",
 		weight: 8,
 		evaluate: (v) => {
-			const desc =
-				"Controla qué información del referrer se envía al navegar a otros sitios.";
+			const desc = msg("rule_rp_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Se filtran URLs completas a sitios externos, potencialmente exponiendo tokens o info sensible.",
+					msg("rule_rp_missing_risk"),
 					"Referrer-Policy: strict-origin-when-cross-origin",
 				);
 			const good = [
@@ -195,18 +188,18 @@ export const RULES: Rule[] = [
 				"same-origin",
 			];
 			if (good.includes(v.toLowerCase().trim()))
-				return ok(v, desc, "Configuración recomendada.");
+				return ok(v, desc, msg("rule_config_recommended"));
 			if (v.toLowerCase().includes("unsafe-url"))
 				return insecure(
 					v,
 					desc,
-					"unsafe-url envía siempre el referrer completo, incluso sobre HTTP.",
+					msg("rule_rp_unsafe_risk"),
 					"Referrer-Policy: strict-origin-when-cross-origin",
 				);
 			return improvable(
 				v,
 				desc,
-				"Política poco restrictiva.",
+				msg("rule_rp_weak_risk"),
 				"Referrer-Policy: strict-origin-when-cross-origin",
 				0.6,
 			);
@@ -217,19 +210,14 @@ export const RULES: Rule[] = [
 		category: "critical",
 		weight: 7,
 		evaluate: (v) => {
-			const desc =
-				"Restringe el acceso a APIs del navegador (cámara, micrófono, geolocalización, etc.).";
+			const desc = msg("rule_pp_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Sin restricciones, scripts de terceros pueden solicitar APIs sensibles.",
+					msg("rule_pp_missing_risk"),
 					"Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()",
 				);
-			return ok(
-				v,
-				desc,
-				"Revisar que las directivas cubran al menos camera, microphone y geolocation.",
-			);
+			return ok(v, desc, msg("rule_pp_ok_rec"));
 		},
 	},
 	{
@@ -237,20 +225,19 @@ export const RULES: Rule[] = [
 		category: "recommended",
 		weight: 5,
 		evaluate: (v) => {
-			const desc =
-				"Aísla el contexto de navegación frente a popups de otros orígenes.";
+			const desc = msg("rule_coop_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Permite ataques tipo XS-Leaks vía window.opener.",
+					msg("rule_coop_missing_risk"),
 					"Cross-Origin-Opener-Policy: same-origin",
 				);
 			if (v.toLowerCase().includes("same-origin"))
-				return ok(v, desc, "Correcto.");
+				return ok(v, desc, msg("rule_correct"));
 			return improvable(
 				v,
 				desc,
-				"Política débil.",
+				msg("rule_weak_policy"),
 				"Cross-Origin-Opener-Policy: same-origin",
 				0.6,
 			);
@@ -261,23 +248,22 @@ export const RULES: Rule[] = [
 		category: "recommended",
 		weight: 4,
 		evaluate: (v) => {
-			const desc =
-				"Requiere que los recursos embebidos opten explícitamente a ser cargados (CORP/CORS).";
+			const desc = msg("rule_coep_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Sin COEP no se pueden usar APIs aisladas como SharedArrayBuffer de forma segura.",
+					msg("rule_coep_missing_risk"),
 					"Cross-Origin-Embedder-Policy: require-corp",
 				);
 			if (
 				v.toLowerCase().includes("require-corp") ||
 				v.toLowerCase().includes("credentialless")
 			)
-				return ok(v, desc, "Correcto.");
+				return ok(v, desc, msg("rule_correct"));
 			return improvable(
 				v,
 				desc,
-				"Valor no aporta aislamiento.",
+				msg("rule_coep_weak_risk"),
 				"Cross-Origin-Embedder-Policy: require-corp",
 				0.5,
 			);
@@ -288,22 +274,22 @@ export const RULES: Rule[] = [
 		category: "recommended",
 		weight: 4,
 		evaluate: (v) => {
-			const desc = "Indica qué orígenes pueden incluir este recurso.";
+			const desc = msg("rule_corp_desc");
 			if (!v)
 				return missing(
 					desc,
-					"Otros sitios pueden incluir tus recursos en ataques de side-channel.",
+					msg("rule_corp_missing_risk"),
 					"Cross-Origin-Resource-Policy: same-origin",
 				);
 			if (
 				v.toLowerCase().includes("same-origin") ||
 				v.toLowerCase().includes("same-site")
 			)
-				return ok(v, desc, "Correcto.");
+				return ok(v, desc, msg("rule_correct"));
 			return improvable(
 				v,
 				desc,
-				"cross-origin permite uso desde cualquier sitio.",
+				msg("rule_corp_weak_risk"),
 				"Cross-Origin-Resource-Policy: same-origin",
 				0.5,
 			);
@@ -314,21 +300,20 @@ export const RULES: Rule[] = [
 		category: "informational",
 		weight: 3,
 		evaluate: (v) => {
-			const desc =
-				"Identifica el servidor web. Si revela versión facilita ataques dirigidos.";
-			if (!v) return ok("(no enviado)", desc, "Mantener oculto.");
+			const desc = msg("rule_server_desc");
+			if (!v) return ok(null, desc, msg("rule_keep_hidden"));
 			if (/\d/.test(v))
 				return insecure(
 					v,
 					desc,
-					"Expone versión del servidor: ayuda a un atacante a buscar exploits específicos.",
-					"Ocultar la versión o eliminar el header en la configuración del servidor/proxy.",
+					msg("rule_server_version_risk"),
+					msg("rule_server_version_rec"),
 				);
 			return improvable(
 				v,
 				desc,
-				"Idealmente este header no se envía.",
-				"Eliminar el header Server en la configuración del servidor.",
+				msg("rule_server_present_risk"),
+				msg("rule_server_present_rec"),
 				0.7,
 			);
 		},
@@ -338,15 +323,9 @@ export const RULES: Rule[] = [
 		category: "informational",
 		weight: 4,
 		evaluate: (v) => {
-			const desc =
-				"Indica la tecnología del backend (PHP, Express, ASP.NET, etc.).";
-			if (!v) return ok("(no enviado)", desc, "Mantener oculto.");
-			return insecure(
-				v,
-				desc,
-				"Revela el stack tecnológico: facilita la búsqueda de vulnerabilidades conocidas.",
-				"Eliminar el header X-Powered-By en la app o proxy.",
-			);
+			const desc = msg("rule_xpb_desc");
+			if (!v) return ok(null, desc, msg("rule_keep_hidden"));
+			return insecure(v, desc, msg("rule_xpb_risk"), msg("rule_xpb_rec"));
 		},
 	},
 ];

@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import type { AnalysisReport } from "@/lib/headers/types";
+import { m } from "@/paraglide/messages.js";
+import { getLocale } from "@/paraglide/runtime.js";
 import { ExportButtons } from "./ExportButtons";
 import { LEVELS, STATUS, STATUS_ORDER } from "./status";
 
@@ -27,7 +29,7 @@ export function ScoreCard({ report }: { report: AnalysisReport }) {
 			<div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
 				<div className="lg:col-span-5">
 					<div className="font-mono text-xs text-muted-foreground">
-						Puntuación de seguridad
+						{m.score_label()}
 					</div>
 					<div className="mt-8 flex items-end gap-3">
 						<span
@@ -42,7 +44,7 @@ export function ScoreCard({ report }: { report: AnalysisReport }) {
 					<div
 						className={`mt-5 pb-1 font-serif text-3xl leading-[1.1] italic ${level.text}`}
 					>
-						{level.label}
+						{level.label()}
 					</div>
 				</div>
 
@@ -60,7 +62,7 @@ export function ScoreCard({ report }: { report: AnalysisReport }) {
 						{STATUS_ORDER.map((s) => (
 							<div key={s}>
 								<dt className="font-mono text-xs text-muted-foreground">
-									{STATUS[s].label}
+									{STATUS[s].label()}
 								</dt>
 								<dd
 									className={`mt-1 font-serif text-4xl leading-none tabular-nums ${counts[s] ? STATUS[s].text : "text-muted-foreground/60"}`}
@@ -72,14 +74,18 @@ export function ScoreCard({ report }: { report: AnalysisReport }) {
 					</dl>
 
 					<dl className="grid gap-x-6 gap-y-3 border-t border-border pt-5 font-mono text-xs sm:grid-cols-[auto_1fr]">
-						<dt className="text-muted-foreground">URL final</dt>
+						<dt className="text-muted-foreground">{m.report_final_url()}</dt>
 						<dd className="break-all">{report.finalUrl}</dd>
-						<dt className="text-muted-foreground">Estado HTTP</dt>
+						<dt className="text-muted-foreground">{m.report_http_status()}</dt>
 						<dd>{report.statusCode}</dd>
-						<dt className="text-muted-foreground">Fecha</dt>
-						<dd>{new Date(report.fetchedAt).toLocaleString()}</dd>
-						<dt className="text-muted-foreground">Fuente</dt>
-						<dd>{report.source === "firecrawl" ? "Firecrawl" : "Directa"}</dd>
+						<dt className="text-muted-foreground">{m.report_date()}</dt>
+						<dd>{new Date(report.fetchedAt).toLocaleString(getLocale())}</dd>
+						<dt className="text-muted-foreground">{m.report_source()}</dt>
+						<dd>
+							{report.source === "firecrawl"
+								? m.source_firecrawl()
+								: m.source_direct()}
+						</dd>
 					</dl>
 
 					<ExportButtons report={report} />

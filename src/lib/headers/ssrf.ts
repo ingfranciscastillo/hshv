@@ -1,3 +1,5 @@
+import type { ErrorKey } from "@/lib/errors";
+
 const BLOCKED_HOSTS = new Set([
 	"localhost",
 	"ip6-localhost",
@@ -37,39 +39,36 @@ function isPrivateIPv6(ip: string): boolean {
 
 export function validateTargetUrl(
 	input: string,
-): { ok: true; url: URL } | { ok: false; error: string } {
+): { ok: true; url: URL } | { ok: false; error: ErrorKey } {
 	let url: URL;
 	try {
 		url = new URL(input);
 	} catch {
-		return { ok: false, error: "URL inválida." };
+		return { ok: false, error: "err_url_invalid" };
 	}
 	if (!/^https?:$/.test(url.protocol))
-		return { ok: false, error: "Solo se permiten URLs http(s)." };
+		return { ok: false, error: "err_url_protocol" };
 	if (url.username || url.password)
 		return {
 			ok: false,
-			error: "Las credenciales en la URL no están permitidas.",
+			error: "err_url_credentials",
 		};
 	const host = url.hostname.toLowerCase();
-	if (!host) return { ok: false, error: "Hostname vacío." };
-	if (BLOCKED_HOSTS.has(host))
-		return { ok: false, error: "Host bloqueado por política SSRF." };
+	if (!host) return { ok: false, error: "err_url_empty_host" };
+	if (BLOCKED_HOSTS.has(host)) return { ok: false, error: "err_host_blocked" };
 	if (
 		host.endsWith(".localhost") ||
 		host.endsWith(".internal") ||
 		host.endsWith(".local")
 	)
-		return { ok: false, error: "Dominio interno bloqueado." };
+		return { ok: false, error: "err_internal_domain" };
 	// IPv4 literal
 	if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
-		if (isPrivateIPv4(host))
-			return { ok: false, error: "Rango IPv4 privado bloqueado." };
+		if (isPrivateIPv4(host)) return { ok: false, error: "err_private_ipv4" };
 	}
 	// IPv6 literal
 	if (host.includes(":")) {
-		if (isPrivateIPv6(host))
-			return { ok: false, error: "Rango IPv6 privado bloqueado." };
+		if (isPrivateIPv6(host)) return { ok: false, error: "err_private_ipv6" };
 	}
 	return { ok: true, url };
 }

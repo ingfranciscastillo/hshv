@@ -12,3 +12,6 @@ dist-ssr
 __unconfig*
 todos.json
 .vscode
+# Paraglide (generated)
+src/paraglide
+project.inlang/cache

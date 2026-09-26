@@ -9,7 +9,9 @@ import {
 	Scripts,
 	useRouter,
 } from "@tanstack/react-router";
-import { SITE } from "@/lib/site";
+import { localeMeta, SITE } from "@/lib/site";
+import { m } from "@/paraglide/messages.js";
+import { getLocale, localizeHref } from "@/paraglide/runtime.js";
 import appCss from "../styles.css?url";
 
 // Phosphor Light everywhere; icons inherit color and are sized via className.
@@ -24,19 +26,20 @@ function NotFoundComponent() {
 		<div className="flex min-h-[100dvh] items-center px-4 sm:px-8">
 			<div className="mx-auto w-full max-w-5xl">
 				<div className="border-t border-rule pt-6 font-mono text-xs text-muted-foreground">
-					Error 404
+					{m.notfound_label()}
 				</div>
 				<h1 className="mt-6 text-5xl leading-[1.05] sm:text-7xl">
-					Esta página <em>no existe.</em>
+					{m.notfound_before()}
+					<em>{m.notfound_emphasis()}</em>
 				</h1>
 				<p className="mt-5 max-w-[48ch] text-muted-foreground">
-					La dirección que buscas se movió o nunca estuvo aquí.
+					{m.notfound_body()}
 				</p>
 				<Link
 					to="/"
 					className="mt-8 inline-flex h-11 items-center bg-foreground px-6 text-sm font-medium text-background transition-transform active:scale-[0.98]"
 				>
-					Volver al inicio
+					{m.back_home()}
 				</Link>
 			</div>
 		</div>
@@ -51,13 +54,14 @@ function ErrorComponent({ reset }: ErrorComponentProps) {
 		<div className="flex min-h-[100dvh] items-center px-4 sm:px-8">
 			<div className="mx-auto w-full max-w-5xl">
 				<div className="border-t border-rule pt-6 font-mono text-xs text-muted-foreground">
-					Error
+					{m.error_label()}
 				</div>
 				<h1 className="mt-6 text-4xl leading-[1.1] sm:text-6xl">
-					La página no <em>cargó.</em>
+					{m.error_before()}
+					<em>{m.error_emphasis()}</em>
 				</h1>
 				<p className="mt-5 max-w-[48ch] text-muted-foreground">
-					Algo falló de nuestro lado. Intenta de nuevo o vuelve al inicio.
+					{m.error_body()}
 				</p>
 				<div className="mt-8 flex flex-wrap gap-3">
 					<button
@@ -68,13 +72,13 @@ function ErrorComponent({ reset }: ErrorComponentProps) {
 						}}
 						className="inline-flex h-11 cursor-pointer items-center bg-foreground px-6 text-sm font-medium text-background transition-transform active:scale-[0.98]"
 					>
-						Reintentar
+						{m.error_retry()}
 					</button>
 					<a
-						href="/"
+						href={localizeHref("/")}
 						className="inline-flex h-11 items-center border border-input px-6 text-sm font-medium transition-colors hover:bg-accent"
 					>
-						Volver al inicio
+						{m.back_home()}
 					</a>
 				</div>
 			</div>
@@ -88,18 +92,13 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			{ charSet: "utf-8" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
 			{ title: SITE.name },
-			{ name: "description", content: SITE.description },
 			{ name: "author", content: SITE.author },
 			{ property: "og:site_name", content: "HSHV" },
-			{ property: "og:locale", content: "es_ES" },
 			{ property: "og:type", content: "website" },
-			{ property: "og:image", content: SITE.image },
 			{ property: "og:image:width", content: "1200" },
 			{ property: "og:image:height", content: "630" },
-			{ property: "og:image:alt", content: SITE.imageAlt },
 			{ name: "twitter:card", content: "summary_large_image" },
-			{ name: "twitter:image", content: SITE.image },
-			{ name: "twitter:image:alt", content: SITE.imageAlt },
+			...localeMeta(),
 		],
 		links: [
 			{ rel: "stylesheet", href: appCss },
@@ -118,7 +117,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootShell({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="es">
+		<html lang={getLocale()}>
 			<head>
 				<HeadContent />
 				{/* Rendered here: route meta is deduped by name, which would drop one. */}

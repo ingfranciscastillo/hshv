@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import type { AnalysisReport } from "@/lib/headers/types";
 import { HeaderRow } from "./HeaderRow";
-import { CATEGORIES, CATEGORY_TITLES } from "./status";
+import { CATEGORIES, CATEGORY_TITLES, headersCount } from "./status";
 
 export const ReportView = memo(function ReportView({
 	report,
@@ -26,10 +26,10 @@ export const ReportView = memo(function ReportView({
 				>
 					<div className="flex items-baseline justify-between gap-4 border-t border-rule pt-6">
 						<h2 id={`cat-${g.category}`} className="text-4xl leading-none">
-							{CATEGORY_TITLES[g.category]}
+							{CATEGORY_TITLES[g.category]()}
 						</h2>
 						<span className="font-mono text-xs text-muted-foreground">
-							{g.items.length} {g.items.length === 1 ? "header" : "headers"}
+							{headersCount(g.items.length)}
 						</span>
 					</div>
 					<div className="mt-4 divide-y divide-border">

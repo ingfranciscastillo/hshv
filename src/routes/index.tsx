@@ -10,25 +10,19 @@ import { ScoreCard } from "@/components/hshv/ScoreCard";
 import { CATEGORIES, CATEGORY_TITLES } from "@/components/hshv/status";
 import { UrlForm } from "@/components/hshv/UrlForm";
 import { Toaster } from "@/components/ui/sonner";
+import { errorText } from "@/lib/errors";
 import { analyzeUrl } from "@/lib/headers/analyze.functions";
 import { RULES } from "@/lib/headers/rules";
 import { saveToHistory } from "@/lib/headers/storage";
 import type { AnalysisReport } from "@/lib/headers/types";
-import { canonical, SITE } from "@/lib/site";
+import { alternates, canonical, ogImage, SITE } from "@/lib/site";
+import { m } from "@/paraglide/messages.js";
+import { getLocale } from "@/paraglide/runtime.js";
 
 const FEATURES = [
-	{
-		title: "Detección automática",
-		desc: "Analiza CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy y Permissions-Policy en segundos.",
-	},
-	{
-		title: "Reporte accionable",
-		desc: "Identifica configuraciones faltantes o débiles y muestra exactamente qué debes corregir.",
-	},
-	{
-		title: "Score de seguridad",
-		desc: "Obtén una puntuación de 0 a 100 basada en buenas prácticas modernas y riesgos detectados.",
-	},
+	{ title: m.feature_detection_title, desc: m.feature_detection_desc },
+	{ title: m.feature_report_title, desc: m.feature_report_desc },
+	{ title: m.feature_score_title, desc: m.feature_score_desc },
 ] as const;
 
 const CHECKED = CATEGORIES.map((c) => ({
@@ -38,19 +32,20 @@ const CHECKED = CATEGORIES.map((c) => ({
 
 export const Route = createFileRoute("/")({
 	head: () => {
-		const title = "Validador de headers de seguridad HTTP | HSHV";
+		const title = m.meta_home_title();
+		const description = m.meta_site_description();
 		const url = canonical("/");
 		return {
 			meta: [
 				{ title },
-				{ name: "description", content: SITE.description },
+				{ name: "description", content: description },
 				{ property: "og:title", content: title },
-				{ property: "og:description", content: SITE.description },
+				{ property: "og:description", content: description },
 				{ property: "og:url", content: url },
 				{ name: "twitter:title", content: title },
-				{ name: "twitter:description", content: SITE.description },
+				{ name: "twitter:description", content: description },
 			],
-			links: [{ rel: "canonical", href: url }],
+			links: [{ rel: "canonical", href: url }, ...alternates("/")],
 			scripts: [
 				{
 					type: "application/ld+json",
@@ -59,10 +54,10 @@ export const Route = createFileRoute("/")({
 						"@type": "WebApplication",
 						name: "HSHV",
 						alternateName: "HTTP Security Headers Validator",
-						description: SITE.description,
+						description,
 						url,
-						image: SITE.image,
-						inLanguage: "es",
+						image: ogImage(),
+						inLanguage: getLocale(),
 						applicationCategory: "SecurityApplication",
 						operatingSystem: "Any",
 						isAccessibleForFree: true,
@@ -92,8 +87,7 @@ function IndexPage() {
 			saveToHistory(r);
 		},
 		onError: (e: unknown) => {
-			const msg = e instanceof Error ? e.message : "Error desconocido";
-			toast.error(msg);
+			toast.error(errorText(e));
 		},
 	});
 
@@ -115,7 +109,7 @@ function IndexPage() {
 				href="#main-content"
 				className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
 			>
-				Saltar al contenido
+				{m.skip_to_content()}
 			</a>
 			<AppHeader />
 			<Toaster position="top-right" richColors />
@@ -126,14 +120,15 @@ function IndexPage() {
 				<section className="grid gap-14 pt-14 pb-20 sm:pt-20 lg:grid-cols-12 lg:gap-12 lg:pb-24">
 					<div className="reveal lg:col-span-8">
 						<div className="font-mono text-xs text-muted-foreground">
-							Informe de seguridad HTTP
+							{m.home_eyebrow()}
 						</div>
 						<h1 className="mt-5 pb-1 text-5xl leading-[1.08] sm:text-6xl lg:text-[3.6rem] xl:text-[4rem]">
-							Audita los headers HTTP de <em>cualquier</em> sitio.
+							{m.home_title_before()}
+							<em>{m.home_title_emphasis()}</em>
+							{m.home_title_after()}
 						</h1>
 						<p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-muted-foreground">
-							Inspeccionamos la respuesta del servidor, puntuamos sus políticas
-							de seguridad y te damos la configuración lista para copiar.
+							{m.home_subtitle()}
 						</p>
 						<div className="mt-10 max-w-xl">
 							<UrlForm
@@ -154,13 +149,13 @@ function IndexPage() {
 							id="checked-title"
 							className="border-t border-rule pt-4 text-2xl leading-tight"
 						>
-							Lo que revisamos
+							{m.checked_title()}
 						</h2>
 						<div className="mt-6 space-y-6">
 							{CHECKED.map((g) => (
 								<div key={g.category}>
 									<div className="text-sm text-muted-foreground italic font-serif">
-										{CATEGORY_TITLES[g.category]}
+										{CATEGORY_TITLES[g.category]()}
 									</div>
 									<ul className="mt-2 space-y-1.5 font-mono text-[13px]">
 										{g.names.map((n) => (
@@ -194,17 +189,19 @@ function IndexPage() {
 							id="features-title"
 							className="text-4xl leading-[1.05] lg:col-span-4"
 						>
-							Qué obtienes
+							{m.features_title()}
 						</h2>
 						<dl className="space-y-10 lg:col-span-8">
 							{FEATURES.map((f) => (
 								<div
-									key={f.title}
+									key={f.title()}
 									className="grid gap-2 sm:grid-cols-[14rem_1fr] sm:gap-8"
 								>
-									<dt className="font-serif text-xl leading-snug">{f.title}</dt>
+									<dt className="font-serif text-xl leading-snug">
+										{f.title()}
+									</dt>
 									<dd className="max-w-[52ch] leading-relaxed text-muted-foreground">
-										{f.desc}
+										{f.desc()}
 									</dd>
 								</div>
 							))}
@@ -220,7 +217,7 @@ function IndexPage() {
 function ReportSkeleton() {
 	return (
 		<>
-			<output className="sr-only">Analizando el sitio</output>
+			<output className="sr-only">{m.analyzing_site()}</output>
 			<div
 				aria-hidden="true"
 				className="grid animate-pulse gap-10 border-t border-rule pt-8 pb-24 motion-reduce:animate-none lg:grid-cols-12 lg:gap-12"
