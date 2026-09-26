@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { authClient } from "#/lib/auth-client";
+import { LogoMark } from "./LogoMark";
 
 const NAV_LINK =
 	"relative py-1 text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:after:absolute [&.active]:after:inset-x-0 [&.active]:after:-bottom-[18px] [&.active]:after:h-[2px] [&.active]:after:bg-primary";
@@ -15,7 +16,8 @@ export function AppHeader() {
 		<header className="sticky top-0 z-20 bg-background/85 backdrop-blur-md">
 			<div className="mx-auto max-w-6xl px-4 sm:px-8">
 				<div className="flex h-16 items-center justify-between gap-6 border-b border-rule">
-					<Link to="/" className="flex items-baseline gap-3">
+					<Link to="/" className="flex items-center gap-3">
+						<LogoMark className="h-[22px] w-auto" />
 						<span className="font-serif text-[26px] leading-none tracking-tight">
 							HSHV
 						</span>
