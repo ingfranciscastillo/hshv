@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { History, LogIn, LogOut, ShieldCheck } from "lucide-react";
 import { authClient } from "#/lib/auth-client";
+
+const NAV_LINK =
+	"relative py-1 text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:after:absolute [&.active]:after:inset-x-0 [&.active]:after:-bottom-[18px] [&.active]:after:h-[2px] [&.active]:after:bg-primary";
 
 export function AppHeader() {
 	const { data: session, isPending } = authClient.useSession();
@@ -10,51 +12,44 @@ export function AppHeader() {
 	};
 
 	return (
-		<header className="sticky backdrop-blur-xs border-b border-border top-0 z-10">
-			<div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-				<Link to="/" className="flex items-center gap-2 font-bold">
-					<ShieldCheck className="size-5 text-primary" aria-hidden="true" />
-					<span style={{ fontFamily: "Space Grotesk, sans-serif" }}>HSHV</span>
-					<span className="text-xs text-muted-foreground font-normal hidden sm:inline">
-						/ HTTP Security Headers Validator
-					</span>
-				</Link>
-				<nav className="flex items-center gap-1 text-sm">
-					<Link
-						to="/"
-						className="px-3 py-1.5 rounded-md hover:bg-secondary [&.active]:text-primary"
-						activeOptions={{ exact: true }}
-					>
-						Analizar
+		<header className="sticky top-0 z-20 bg-background/85 backdrop-blur-md">
+			<div className="mx-auto max-w-6xl px-4 sm:px-8">
+				<div className="flex h-16 items-center justify-between gap-6 border-b border-rule">
+					<Link to="/" className="flex items-baseline gap-3">
+						<span className="font-serif text-[26px] leading-none tracking-tight">
+							HSHV
+						</span>
+						<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">
+							Security Headers Validator
+						</span>
 					</Link>
-					<Link
-						to="/history"
-						className="px-3 py-1.5 rounded-md hover:bg-secondary [&.active]:text-primary flex items-center gap-1"
-					>
-						<History className="size-4" aria-hidden="true" /> Historial
-					</Link>
-					{session?.user ? (
-						<>
-							<span className="hidden md:inline text-xs text-muted-foreground ml-2 font-mono truncate max-w-[160px]">
-								{session.user.email}
-							</span>
-							<button
-								type="button"
-								onClick={handleSignOut}
-								className="px-3 py-1.5 rounded-md hover:bg-secondary flex items-center gap-1 cursor-pointer"
-							>
-								<LogOut className="size-4" aria-hidden="true" /> Salir
-							</button>
-						</>
-					) : !isPending ? (
-						<Link
-							to="/auth"
-							className="px-3 py-1.5 rounded-md hover:bg-secondary [&.active]:text-primary flex items-center gap-1"
-						>
-							<LogIn className="size-4" aria-hidden="true" /> Acceder
+					<nav className="flex items-center gap-5 text-sm sm:gap-7">
+						<Link to="/" className={NAV_LINK} activeOptions={{ exact: true }}>
+							Analizar
 						</Link>
-					) : null}
-				</nav>
+						<Link to="/history" className={NAV_LINK}>
+							Historial
+						</Link>
+						{session?.user ? (
+							<>
+								<span className="hidden max-w-[180px] truncate font-mono text-xs text-muted-foreground md:inline">
+									{session.user.email}
+								</span>
+								<button
+									type="button"
+									onClick={handleSignOut}
+									className="cursor-pointer py-1 text-muted-foreground transition-colors hover:text-foreground"
+								>
+									Salir
+								</button>
+							</>
+						) : !isPending ? (
+							<Link to="/auth" className={NAV_LINK}>
+								Acceder
+							</Link>
+						) : null}
+					</nav>
+				</div>
 			</div>
 		</header>
 	);

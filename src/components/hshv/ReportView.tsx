@@ -1,18 +1,7 @@
 import { memo, useMemo } from "react";
-import type { AnalysisReport, HeaderCategory } from "@/lib/headers/types";
+import type { AnalysisReport } from "@/lib/headers/types";
 import { HeaderRow } from "./HeaderRow";
-
-const TITLES: Record<HeaderCategory, string> = {
-	critical: "Críticos",
-	recommended: "Recomendados",
-	informational: "Informativos",
-};
-
-const CATEGORIES: HeaderCategory[] = [
-	"critical",
-	"recommended",
-	"informational",
-];
+import { CATEGORIES, CATEGORY_TITLES } from "./status";
 
 export const ReportView = memo(function ReportView({
 	report,
@@ -27,14 +16,23 @@ export const ReportView = memo(function ReportView({
 	}, [report.findings]);
 
 	return (
-		<div className="space-y-8">
-			{grouped.map((g) => (
-				<section key={g.category}>
-					<h2 className="text-lg font-bold mb-3 flex items-center gap-2">
-						<span className="inline-block size-2 rounded-full bg-primary" />{" "}
-						{TITLES[g.category]}
-					</h2>
-					<div className="space-y-3">
+		<div className="space-y-20">
+			{grouped.map((g, i) => (
+				<section
+					key={g.category}
+					aria-labelledby={`cat-${g.category}`}
+					className="reveal"
+					style={{ "--i": i + 1 } as React.CSSProperties}
+				>
+					<div className="flex items-baseline justify-between gap-4 border-t border-rule pt-6">
+						<h2 id={`cat-${g.category}`} className="text-4xl leading-none">
+							{CATEGORY_TITLES[g.category]}
+						</h2>
+						<span className="font-mono text-xs text-muted-foreground">
+							{g.items.length} {g.items.length === 1 ? "header" : "headers"}
+						</span>
+					</div>
+					<div className="mt-4 divide-y divide-border">
 						{g.items.map((f) => (
 							<HeaderRow key={f.name} f={f} />
 						))}

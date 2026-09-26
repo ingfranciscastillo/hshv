@@ -1,7 +1,8 @@
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRightIcon, TrashIcon } from "@phosphor-icons/react";
+import { Link } from "@tanstack/react-router";
 import { exportJson } from "@/lib/headers/export";
 import type { AnalysisReport } from "@/lib/headers/types";
+import { LEVELS } from "./status";
 
 export function HistoryTable({
 	items,
@@ -12,61 +13,97 @@ export function HistoryTable({
 }) {
 	if (!items.length) {
 		return (
-			<div className="text-center text-muted-foreground py-12 border border-dashed border-border rounded-lg">
-				Sin análisis aún. Ejecuta uno desde la página principal.
+			<div className="border-t border-rule pt-10 pb-16">
+				<h2 className="text-3xl leading-tight">
+					Aún no hay <em>análisis.</em>
+				</h2>
+				<p className="mt-3 max-w-[48ch] text-muted-foreground">
+					Cada sitio que audites aparecerá aquí con su puntuación y nivel.
+				</p>
+				<Link
+					to="/"
+					className="group mt-8 inline-flex h-11 items-center gap-3 bg-foreground px-6 text-sm font-medium text-background transition-transform active:scale-[0.98]"
+				>
+					Analizar un sitio
+					<ArrowRightIcon
+						className="size-[18px] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
+						aria-hidden="true"
+					/>
+				</Link>
 			</div>
 		);
 	}
 	return (
-		<div className="bg-transparent backdrop-blur-xs border border-border rounded-lg overflow-hidden">
-			<div className="flex items-center justify-between p-3 border-b border-border">
-				<div className="text-sm text-muted-foreground">
-					{items.length} análisis
+		<section aria-labelledby="records-title">
+			<div className="flex items-baseline justify-between gap-4 border-t border-rule pt-6">
+				<h2 id="records-title" className="text-3xl leading-none">
+					Registros
+				</h2>
+				<div className="flex items-center gap-5">
+					<span className="font-mono text-xs text-muted-foreground">
+						{items.length} análisis
+					</span>
+					<button
+						type="button"
+						onClick={onClear}
+						className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-destructive"
+					>
+						<TrashIcon className="size-[18px]" aria-hidden="true" />
+						Limpiar
+					</button>
 				</div>
-				<Button variant="ghost" size="sm" onClick={onClear}>
-					<Trash2 className="size-4 mr-1" aria-hidden="true" /> Limpiar
-				</Button>
 			</div>
-			<div className="overflow-x-auto">
-				<table className="w-full text-sm">
-					<thead className="bg-background/50 text-xs uppercase tracking-wider text-muted-foreground">
+			<div className="mt-4 overflow-x-auto">
+				<table className="w-full min-w-[640px] text-sm">
+					<thead className="font-mono text-xs text-muted-foreground">
 						<tr>
-							<th className="text-left p-3">Fecha</th>
-							<th className="text-left p-3">URL</th>
-							<th className="text-right p-3">Score</th>
-							<th className="text-left p-3">Nivel</th>
-							<th className="p-3"></th>
+							<th className="py-3 pr-4 text-left font-normal">Fecha</th>
+							<th className="py-3 pr-4 text-left font-normal">URL</th>
+							<th className="py-3 pr-4 text-right font-normal">Score</th>
+							<th className="py-3 pr-4 text-left font-normal">Nivel</th>
+							<th className="py-3">
+								<span className="sr-only">Acciones</span>
+							</th>
 						</tr>
 					</thead>
-					<tbody>
-						{items.map((r, i) => (
-							<tr
-								// biome-ignore lint/suspicious/noArrayIndexKey: funciona
-								key={i}
-								className="border-t border-border hover:bg-background/30"
-							>
-								<td className="p-3 text-muted-foreground whitespace-nowrap">
-									{new Date(r.fetchedAt).toLocaleString()}
-								</td>
-								<td className="p-3 break-all max-w-xs">{r.finalUrl}</td>
-								<td className="p-3 text-right font-bold tabular-nums">
-									{r.score}
-								</td>
-								<td className="p-3 capitalize">{r.level}</td>
-								<td className="p-3 text-right">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => exportJson(r)}
+					<tbody className="divide-y divide-border border-t border-border">
+						{items.map((r, i) => {
+							const level = LEVELS[r.level];
+							return (
+								<tr
+									// biome-ignore lint/suspicious/noArrayIndexKey: funciona
+									key={i}
+									className="transition-colors hover:bg-muted/60"
+								>
+									<td className="py-4 pr-4 font-mono text-xs whitespace-nowrap text-muted-foreground">
+										{new Date(r.fetchedAt).toLocaleString()}
+									</td>
+									<td className="max-w-xs py-4 pr-4 font-mono text-[13px] break-all">
+										{r.finalUrl}
+									</td>
+									<td
+										className={`py-4 pr-4 text-right font-serif text-2xl leading-none tabular-nums ${level.text}`}
 									>
-										JSON
-									</Button>
-								</td>
-							</tr>
-						))}
+										{r.score}
+									</td>
+									<td className={`py-4 pr-4 font-serif italic ${level.text}`}>
+										{level.label}
+									</td>
+									<td className="py-4 text-right">
+										<button
+											type="button"
+											onClick={() => exportJson(r)}
+											className="cursor-pointer border border-input px-3 py-1.5 font-mono text-xs transition-colors hover:bg-accent"
+										>
+											JSON
+										</button>
+									</td>
+								</tr>
+							);
+						})}
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</section>
 	);
 }

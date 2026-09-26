@@ -1,6 +1,6 @@
+import { IconContext, type IconProps } from "@phosphor-icons/react";
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-	ClientOnly,
 	createRootRouteWithContext,
 	type ErrorComponentProps,
 	HeadContent,
@@ -9,14 +9,10 @@ import {
 	Scripts,
 	useRouter,
 } from "@tanstack/react-router";
-import { lazy } from "react";
 import appCss from "../styles.css?url";
 
-const FaultyTerminalClient = lazy(() =>
-	import("@/components/FaultyTerminalClient").then((m) => ({
-		default: m.default,
-	})),
-);
+// Phosphor Light everywhere; icons inherit color and are sized via className.
+const ICONS: IconProps = { weight: "light", color: "currentColor" };
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -24,23 +20,23 @@ interface MyRouterContext {
 
 function NotFoundComponent() {
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-background px-4">
-			<div className="max-w-md text-center">
-				<h1 className="text-7xl font-bold text-foreground">404</h1>
-				<h2 className="mt-4 text-xl font-semibold text-foreground">
-					Page not found
-				</h2>
-				<p className="mt-2 text-sm text-muted-foreground">
-					The page you're looking for doesn't exist or has been moved.
-				</p>
-				<div className="mt-6">
-					<Link
-						to="/"
-						className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-					>
-						Go home
-					</Link>
+		<div className="flex min-h-[100dvh] items-center px-4 sm:px-8">
+			<div className="mx-auto w-full max-w-5xl">
+				<div className="border-t border-rule pt-6 font-mono text-xs text-muted-foreground">
+					Error 404
 				</div>
+				<h1 className="mt-6 text-5xl leading-[1.05] sm:text-7xl">
+					Esta página <em>no existe.</em>
+				</h1>
+				<p className="mt-5 max-w-[48ch] text-muted-foreground">
+					La dirección que buscas se movió o nunca estuvo aquí.
+				</p>
+				<Link
+					to="/"
+					className="mt-8 inline-flex h-11 items-center bg-foreground px-6 text-sm font-medium text-background transition-transform active:scale-[0.98]"
+				>
+					Volver al inicio
+				</Link>
 			</div>
 		</div>
 	);
@@ -51,31 +47,33 @@ function ErrorComponent({ reset }: ErrorComponentProps) {
 	const router = useRouter();
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-background px-4">
-			<div className="max-w-md text-center">
-				<h1 className="text-xl font-semibold tracking-tight text-foreground">
-					This page didn't load
+		<div className="flex min-h-[100dvh] items-center px-4 sm:px-8">
+			<div className="mx-auto w-full max-w-5xl">
+				<div className="border-t border-rule pt-6 font-mono text-xs text-muted-foreground">
+					Error
+				</div>
+				<h1 className="mt-6 text-4xl leading-[1.1] sm:text-6xl">
+					La página no <em>cargó.</em>
 				</h1>
-				<p className="mt-2 text-sm text-muted-foreground">
-					Something went wrong on our end. You can try refreshing or head back
-					home.
+				<p className="mt-5 max-w-[48ch] text-muted-foreground">
+					Algo falló de nuestro lado. Intenta de nuevo o vuelve al inicio.
 				</p>
-				<div className="mt-6 flex flex-wrap justify-center gap-2">
+				<div className="mt-8 flex flex-wrap gap-3">
 					<button
 						type="button"
 						onClick={() => {
 							router.invalidate();
 							reset();
 						}}
-						className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+						className="inline-flex h-11 cursor-pointer items-center bg-foreground px-6 text-sm font-medium text-background transition-transform active:scale-[0.98]"
 					>
-						Try again
+						Reintentar
 					</button>
 					<a
 						href="/"
-						className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+						className="inline-flex h-11 items-center border border-input px-6 text-sm font-medium transition-colors hover:bg-accent"
 					>
-						Go home
+						Volver al inicio
 					</a>
 				</div>
 			</div>
@@ -102,31 +100,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 					"Analiza los headers HTTP de cualquier sitio y obtén un reporte de seguridad.",
 			},
 			{ property: "og:type", content: "website" },
+			{
+				name: "theme-color",
+				media: "(prefers-color-scheme: light)",
+				content: "#f6f7f9",
+			},
+			{
+				name: "theme-color",
+				media: "(prefers-color-scheme: dark)",
+				content: "#101216",
+			},
 		],
 		links: [
 			{
 				rel: "stylesheet",
 				href: appCss,
-			},
-			{ rel: "preconnect", href: "https://fonts.googleapis.com" },
-			{ rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
-			{
-				rel: "preload",
-				as: "font",
-				type: "font/woff2",
-				href: "https://fonts.gstatic.com/s/spacegrotesk/v16/V8mQoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff2",
-				crossOrigin: "anonymous",
-			},
-			{
-				rel: "preload",
-				as: "font",
-				type: "font/woff2",
-				href: "https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPVmUsaaDhw.woff2",
-				crossOrigin: "anonymous",
-			},
-			{
-				rel: "stylesheet",
-				href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap",
 			},
 			{ rel: "canonical", href: "https://hshv.vercel.app/" },
 			{ rel: "dns-prefetch", href: "https://api.firecrawl.dev" },
@@ -160,40 +148,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootShell({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="es" className="dark">
+		<html lang="es">
 			<head>
 				<HeadContent />
 			</head>
 			<body>
-				<div
-					style={{
-						position: "fixed",
-						inset: 0,
-						zIndex: 0,
-						background: "#1a1f2e",
-					}}
-				>
-					<ClientOnly fallback={null}>
-						<FaultyTerminalClient
-							scale={1.5}
-							gridMul={[2, 1]}
-							digitSize={1.2}
-							timeScale={0.5}
-							scanlineIntensity={0.5}
-							glitchAmount={1}
-							flickerAmount={1}
-							noiseAmp={1}
-							curvature={0.1}
-							tint="#1a1f2e"
-							mouseReact
-							mouseStrength={0.5}
-							pageLoadAnimation
-							brightness={0.6}
-						/>
-					</ClientOnly>
-				</div>
+				<div className="app-backdrop" aria-hidden="true" />
 
-				<div style={{ position: "relative", zIndex: 1 }}>{children}</div>
+				<div style={{ position: "relative", zIndex: 1 }}>
+					<IconContext.Provider value={ICONS}>{children}</IconContext.Provider>
+				</div>
 				<Scripts />
 			</body>
 		</html>

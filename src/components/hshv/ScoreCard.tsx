@@ -1,78 +1,90 @@
-import { Card } from "@/components/ui/card";
+import { useMemo } from "react";
 import type { AnalysisReport } from "@/lib/headers/types";
+import { ExportButtons } from "./ExportButtons";
+import { LEVELS, STATUS, STATUS_ORDER } from "./status";
 
-const LEVELS: Record<
-	AnalysisReport["level"],
-	{ label: string; color: string; bg: string }
-> = {
-	excellent: {
-		label: "Excelente",
-		color: "text-emerald-300",
-		bg: "from-emerald-500/20",
-	},
-	acceptable: {
-		label: "Aceptable",
-		color: "text-cyan-300",
-		bg: "from-cyan-500/20",
-	},
-	deficient: {
-		label: "Deficiente",
-		color: "text-amber-300",
-		bg: "from-amber-500/20",
-	},
-	critical: {
-		label: "Crítico",
-		color: "text-rose-300",
-		bg: "from-rose-500/20",
-	},
-};
+function hostOf(url: string) {
+	try {
+		return new URL(url).host;
+	} catch {
+		return url;
+	}
+}
 
 export function ScoreCard({ report }: { report: AnalysisReport }) {
-	const meta = LEVELS[report.level];
+	const level = LEVELS[report.level];
+	const counts = useMemo(() => {
+		const c = { secure: 0, improvable: 0, missing: 0, insecure: 0 };
+		for (const f of report.findings) c[f.status]++;
+		return c;
+	}, [report.findings]);
+
 	return (
-		<Card
-			className={`p-6 sm:p-8 bg-transparent backdrop-blur-xs border-border animate-in fade-in slide-in-from-bottom-2`}
+		<section
+			aria-labelledby="report-title"
+			className="reveal border-t border-rule pt-8"
 		>
-			<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-				<div>
-					<div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
+			<div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+				<div className="lg:col-span-5">
+					<div className="font-mono text-xs text-muted-foreground">
 						Puntuación de seguridad
 					</div>
-					<div className="flex items-baseline gap-3">
-						<div
-							className={`text-7xl font-bold tabular-nums ${meta.color}`}
-							style={{ fontFamily: "Space Grotesk, sans-serif" }}
+					<div className="mt-8 flex items-end gap-3">
+						<span
+							className={`font-serif text-[8rem] leading-[0.8] tracking-[-0.04em] tabular-nums sm:text-[10rem] ${level.text}`}
 						>
 							{report.score}
-						</div>
-						<div className="text-muted-foreground">/ 100</div>
+						</span>
+						<span className="pb-2 font-mono text-sm text-muted-foreground">
+							/ 100
+						</span>
 					</div>
 					<div
-						className={`mt-1 text-sm font-semibold uppercase tracking-wider ${meta.color}`}
+						className={`mt-5 pb-1 font-serif text-3xl leading-[1.1] italic ${level.text}`}
 					>
-						{meta.label}
+						{level.label}
 					</div>
 				</div>
-				<div className="flex-1 sm:max-w-md">
-					<div className="text-sm text-foreground/80 mb-2">
-						{report.summary}
+
+				<div className="space-y-8 lg:col-span-7">
+					<div className="space-y-3">
+						<h2
+							id="report-title"
+							className="text-3xl leading-[1.1] break-words sm:text-4xl"
+						>
+							{hostOf(report.finalUrl)}
+						</h2>
 					</div>
-					<div className="h-2 rounded-full bg-secondary overflow-hidden">
-						<div
-							className="h-full rounded-full transition-all duration-700"
-							style={{
-								width: `${report.score}%`,
-								background:
-									"linear-gradient(90deg,oklch(0.65 0.23 25),oklch(0.82 0.17 85),oklch(0.78 0.18 165))",
-							}}
-						/>
-					</div>
-					<div className="mt-3 text-xs text-muted-foreground break-all">
-						{report.finalUrl} · status {report.statusCode} ·{" "}
-						{new Date(report.fetchedAt).toLocaleString()} · {report.source}
-					</div>
+
+					<dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+						{STATUS_ORDER.map((s) => (
+							<div key={s}>
+								<dt className="font-mono text-xs text-muted-foreground">
+									{STATUS[s].label}
+								</dt>
+								<dd
+									className={`mt-1 font-serif text-4xl leading-none tabular-nums ${counts[s] ? STATUS[s].text : "text-muted-foreground/60"}`}
+								>
+									{counts[s]}
+								</dd>
+							</div>
+						))}
+					</dl>
+
+					<dl className="grid gap-x-6 gap-y-3 border-t border-border pt-5 font-mono text-xs sm:grid-cols-[auto_1fr]">
+						<dt className="text-muted-foreground">URL final</dt>
+						<dd className="break-all">{report.finalUrl}</dd>
+						<dt className="text-muted-foreground">Estado HTTP</dt>
+						<dd>{report.statusCode}</dd>
+						<dt className="text-muted-foreground">Fecha</dt>
+						<dd>{new Date(report.fetchedAt).toLocaleString()}</dd>
+						<dt className="text-muted-foreground">Fuente</dt>
+						<dd>{report.source === "firecrawl" ? "Firecrawl" : "Directa"}</dd>
+					</dl>
+
+					<ExportButtons report={report} />
 				</div>
 			</div>
-		</Card>
+		</section>
 	);
 }

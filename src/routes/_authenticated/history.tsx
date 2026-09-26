@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { DashboardCards } from "@/components/hshv/DashboardCards";
+import { AppFooter } from "@/components/hshv/Footer";
 import { AppHeader } from "@/components/hshv/Header";
 import { HistoryTable } from "@/components/hshv/HistoryTable";
 import { clearHistory, loadHistory } from "@/lib/headers/storage";
@@ -43,28 +44,28 @@ function HistoryPage() {
 	}, [syncHistory]);
 
 	return (
-		<div className="min-h-screen">
+		<div className="flex min-h-[100dvh] flex-col">
 			<AppHeader />
-			<main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
-				<div>
-					<h1
-						className="text-2xl sm:text-3xl font-bold"
-						style={{ fontFamily: "Space Grotesk, sans-serif" }}
-					>
-						Historial & Dashboard
-					</h1>
-					<p className="text-sm text-muted-foreground mt-1">
-						Datos guardados localmente en este navegador.
+			<main className="mx-auto w-full max-w-6xl flex-1 space-y-16 px-4 pt-14 pb-24 sm:px-8 sm:pt-20">
+				<div className="reveal">
+					<h1 className="text-5xl leading-[1.05] sm:text-6xl">Historial</h1>
+					<p className="mt-4 max-w-[48ch] text-lg leading-relaxed text-muted-foreground">
+						Tus análisis anteriores, guardados en este navegador.
 					</p>
 				</div>
-				<DashboardCards items={items} />
-				<HistoryTable
-					items={items}
-					onClear={() => {
-						clearHistory();
-					}}
-				/>
+				<div className="reveal" style={{ "--i": 1 } as React.CSSProperties}>
+					<DashboardCards items={items} />
+				</div>
+				<div className="reveal" style={{ "--i": 2 } as React.CSSProperties}>
+					<HistoryTable
+						items={items}
+						onClear={() => {
+							clearHistory();
+						}}
+					/>
+				</div>
 			</main>
+			<AppFooter />
 		</div>
 	);
 }

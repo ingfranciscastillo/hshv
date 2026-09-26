@@ -1,26 +1,39 @@
-import { Copy, FileCode2, FileJson } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+	BracketsCurlyIcon,
+	CopyIcon,
+	FileHtmlIcon,
+} from "@phosphor-icons/react";
+import { toast } from "sonner";
 import { exportHtml, exportJson } from "@/lib/headers/export";
 import type { AnalysisReport } from "@/lib/headers/types";
+
+const BTN =
+	"inline-flex h-10 cursor-pointer items-center gap-2 border border-input px-4 text-sm transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-accent active:scale-[0.98]";
 
 export function ExportButtons({ report }: { report: AnalysisReport }) {
 	return (
 		<div className="flex flex-wrap gap-2">
-			<Button variant="outline" size="sm" onClick={() => exportJson(report)}>
-				<FileJson className="size-4 mr-2" aria-hidden="true" /> JSON
-			</Button>
-			<Button variant="outline" size="sm" onClick={() => exportHtml(report)}>
-				<FileCode2 className="size-4 mr-2" aria-hidden="true" /> HTML
-			</Button>
-			<Button
-				variant="ghost"
-				size="sm"
+			<button type="button" className={BTN} onClick={() => exportJson(report)}>
+				<BracketsCurlyIcon className="size-[18px]" aria-hidden="true" />
+				JSON
+			</button>
+			<button type="button" className={BTN} onClick={() => exportHtml(report)}>
+				<FileHtmlIcon className="size-[18px]" aria-hidden="true" />
+				HTML
+			</button>
+			<button
+				type="button"
+				className={BTN}
 				onClick={() =>
-					navigator.clipboard.writeText(JSON.stringify(report, null, 2))
+					navigator.clipboard
+						.writeText(JSON.stringify(report, null, 2))
+						.then(() => toast.success("JSON copiado"))
+						.catch(() => toast.error("No se pudo copiar"))
 				}
 			>
-				<Copy className="size-4 mr-2" aria-hidden="true" /> Copiar JSON
-			</Button>
+				<CopyIcon className="size-[18px]" aria-hidden="true" />
+				Copiar JSON
+			</button>
 		</div>
 	);
 }

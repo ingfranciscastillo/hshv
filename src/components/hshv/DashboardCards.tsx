@@ -1,6 +1,4 @@
-import { Activity, AlertOctagon, TrendingUp } from "lucide-react";
 import { memo, useMemo } from "react";
-import { Card } from "@/components/ui/card";
 import type { AnalysisReport } from "@/lib/headers/types";
 
 interface DashboardCardsProps {
@@ -27,49 +25,45 @@ export const DashboardCards = memo(function DashboardCards({
 	}, [items]);
 
 	return (
-		<div className="grid gap-4 sm:grid-cols-3">
-			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
-				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
-					<Activity className="size-4 text-primary" aria-hidden="true" />{" "}
-					Análisis
-				</div>
-				<div
-					className="mt-2 text-4xl font-bold tabular-nums"
-					style={{ fontFamily: "Space Grotesk, sans-serif" }}
-				>
+		<dl className="grid border-y border-rule sm:grid-cols-[1fr_1fr_1.6fr]">
+			<div className="py-6 sm:pr-8">
+				<dt className="font-mono text-xs text-muted-foreground">Análisis</dt>
+				<dd className="mt-3 font-serif text-6xl leading-none tabular-nums">
 					{stats.total}
-				</div>
-			</Card>
-			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
-				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
-					<TrendingUp className="size-4 text-primary" aria-hidden="true" />{" "}
+				</dd>
+			</div>
+			<div className="border-t border-border py-6 sm:border-t-0 sm:border-l sm:px-8">
+				<dt className="font-mono text-xs text-muted-foreground">
 					Score promedio
-				</div>
-				<div
-					className="mt-2 text-4xl font-bold tabular-nums"
-					style={{ fontFamily: "Space Grotesk, sans-serif" }}
-				>
-					{stats.avg}
-				</div>
-			</Card>
-			<Card className="p-5 bg-transparent backdrop-blur-xs border-border">
-				<div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider">
-					<AlertOctagon className="size-4 text-primary" aria-hidden="true" />{" "}
+				</dt>
+				<dd className="mt-3 flex items-end gap-2">
+					<span className="font-serif text-6xl leading-none tabular-nums">
+						{stats.avg}
+					</span>
+					<span className="pb-1 font-mono text-xs text-muted-foreground">
+						/ 100
+					</span>
+				</dd>
+			</div>
+			<div className="border-t border-border py-6 sm:border-t-0 sm:border-l sm:pl-8">
+				<dt className="font-mono text-xs text-muted-foreground">
 					Headers más ausentes
-				</div>
-				{stats.topMissing.length ? (
-					<ul className="mt-2 space-y-1 text-sm">
-						{stats.topMissing.map(([n, c]) => (
-							<li key={n} className="flex justify-between gap-2">
-								<span className="truncate">{n}</span>
-								<span className="text-muted-foreground tabular-nums">{c}</span>
-							</li>
-						))}
-					</ul>
-				) : (
-					<div className="mt-2 text-sm text-muted-foreground">Sin datos.</div>
-				)}
-			</Card>
-		</div>
+				</dt>
+				<dd className="mt-3">
+					{stats.topMissing.length ? (
+						<ol className="space-y-1.5 font-mono text-[13px]">
+							{stats.topMissing.map(([n, c]) => (
+								<li key={n} className="flex justify-between gap-4">
+									<span className="truncate">{n}</span>
+									<span className="text-status-missing tabular-nums">{c}</span>
+								</li>
+							))}
+						</ol>
+					) : (
+						<p className="text-sm text-muted-foreground">Sin datos todavía.</p>
+					)}
+				</dd>
+			</div>
+		</dl>
 	);
 });
