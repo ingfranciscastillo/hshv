@@ -14,6 +14,7 @@ import { analyzeUrl } from "@/lib/headers/analyze.functions";
 import { RULES } from "@/lib/headers/rules";
 import { saveToHistory } from "@/lib/headers/storage";
 import type { AnalysisReport } from "@/lib/headers/types";
+import { canonical, SITE } from "@/lib/site";
 
 const FEATURES = [
 	{
@@ -36,24 +37,46 @@ const CHECKED = CATEGORIES.map((c) => ({
 }));
 
 export const Route = createFileRoute("/")({
-	head: () => ({
-		meta: [
-			{
-				title: "HTTP Security Headers Validator — Analiza headers de seguridad",
-			},
-			{
-				name: "description",
-				content:
-					"Analiza los headers HTTP de cualquier sitio, evalúa riesgos y obtén recomendaciones accionables.",
-			},
-			{ property: "og:title", content: "HTTP Security Headers Validator" },
-			{
-				property: "og:description",
-				content:
-					"Reporte de seguridad accionable a partir de los headers HTTP de cualquier URL.",
-			},
-		],
-	}),
+	head: () => {
+		const title = "Validador de headers de seguridad HTTP | HSHV";
+		const url = canonical("/");
+		return {
+			meta: [
+				{ title },
+				{ name: "description", content: SITE.description },
+				{ property: "og:title", content: title },
+				{ property: "og:description", content: SITE.description },
+				{ property: "og:url", content: url },
+				{ name: "twitter:title", content: title },
+				{ name: "twitter:description", content: SITE.description },
+			],
+			links: [{ rel: "canonical", href: url }],
+			scripts: [
+				{
+					type: "application/ld+json",
+					children: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "WebApplication",
+						name: "HSHV",
+						alternateName: "HTTP Security Headers Validator",
+						description: SITE.description,
+						url,
+						image: SITE.image,
+						inLanguage: "es",
+						applicationCategory: "SecurityApplication",
+						operatingSystem: "Any",
+						isAccessibleForFree: true,
+						offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+						author: {
+							"@type": "Person",
+							name: SITE.author,
+							url: "https://github.com/ingfranciscastillo",
+						},
+					}),
+				},
+			],
+		};
+	},
 	component: IndexPage,
 });
 

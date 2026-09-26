@@ -10,17 +10,13 @@ import type { AnalysisReport } from "@/lib/headers/types";
 export const Route = createFileRoute("/_authenticated/history")({
 	head: () => ({
 		meta: [
-			{ title: "Historial — HTTP Security Headers Validator" },
+			{ title: "Historial | HSHV" },
 			{
 				name: "description",
 				content:
-					"Dashboard de análisis previos y métricas locales de seguridad de headers HTTP.",
+					"Tus análisis anteriores de headers HTTP, con métricas y registros.",
 			},
-			{ property: "og:title", content: "Historial de análisis" },
-			{
-				property: "og:description",
-				content: "Métricas y registros de tus análisis de headers HTTP.",
-			},
+			{ name: "robots", content: "noindex, nofollow" },
 		],
 	}),
 	component: HistoryPage,

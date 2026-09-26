@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Toaster } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { canonical } from "@/lib/site";
 
 export const Route = createFileRoute("/auth")({
 	validateSearch: z.object({
@@ -16,13 +17,15 @@ export const Route = createFileRoute("/auth")({
 	}),
 	head: () => ({
 		meta: [
-			{ title: "Acceso — HTTP Security Headers Validator" },
+			{ title: "Acceso | HSHV" },
 			{
 				name: "description",
 				content:
-					"Inicia sesión o crea una cuenta para acceder al historial de análisis.",
+					"Inicia sesión o crea una cuenta para guardar tu historial de análisis de headers HTTP.",
 			},
+			{ name: "robots", content: "noindex, follow" },
 		],
+		links: [{ rel: "canonical", href: canonical("/auth") }],
 	}),
 	component: AuthPage,
 });

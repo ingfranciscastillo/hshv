@@ -9,6 +9,7 @@ import {
 	Scripts,
 	useRouter,
 } from "@tanstack/react-router";
+import { SITE } from "@/lib/site";
 import appCss from "../styles.css?url";
 
 // Phosphor Light everywhere; icons inherit color and are sized via className.
@@ -86,58 +87,27 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		meta: [
 			{ charSet: "utf-8" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
-			{ title: "HTTP Security Headers Validator" },
-			{
-				name: "description",
-				content:
-					"Analiza los headers HTTP de cualquier sitio, detecta riesgos y obtén recomendaciones accionables.",
-			},
-			{ name: "author", content: "Lovable" },
-			{ property: "og:title", content: "HTTP Security Headers Validator" },
-			{
-				property: "og:description",
-				content:
-					"Analiza los headers HTTP de cualquier sitio y obtén un reporte de seguridad.",
-			},
+			{ title: SITE.name },
+			{ name: "description", content: SITE.description },
+			{ name: "author", content: SITE.author },
+			{ property: "og:site_name", content: "HSHV" },
+			{ property: "og:locale", content: "es_ES" },
 			{ property: "og:type", content: "website" },
-			{
-				name: "theme-color",
-				media: "(prefers-color-scheme: light)",
-				content: "#f6f7f9",
-			},
-			{
-				name: "theme-color",
-				media: "(prefers-color-scheme: dark)",
-				content: "#101216",
-			},
+			{ property: "og:image", content: SITE.image },
+			{ property: "og:image:width", content: "1200" },
+			{ property: "og:image:height", content: "630" },
+			{ property: "og:image:alt", content: SITE.imageAlt },
+			{ name: "twitter:card", content: "summary_large_image" },
+			{ name: "twitter:image", content: SITE.image },
+			{ name: "twitter:image:alt", content: SITE.imageAlt },
 		],
 		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
-			{ rel: "canonical", href: "https://hshv.vercel.app/" },
+			{ rel: "stylesheet", href: appCss },
+			{ rel: "icon", href: "/favicon.ico", sizes: "48x48" },
+			{ rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+			{ rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+			{ rel: "manifest", href: "/manifest.json" },
 			{ rel: "dns-prefetch", href: "https://api.firecrawl.dev" },
-		],
-		script: [
-			{
-				type: "application/ld+json",
-				children: JSON.stringify({
-					"@context": "https://schema.org",
-					"@type": "WebApplication",
-					name: "HTTP Security Headers Validator",
-					description:
-						"Analiza los headers HTTP de cualquier sitio, detecta riesgos y obtén recomendaciones accionables.",
-					url: "https://hshv.vercel.app/",
-					applicationCategory: "SecurityApplication",
-					operatingSystem: "Any",
-					offers: {
-						"@type": "Offer",
-						price: "0",
-						priceCurrency: "USD",
-					},
-				}),
-			},
 		],
 	}),
 	shellComponent: RootShell,
@@ -151,6 +121,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
 		<html lang="es">
 			<head>
 				<HeadContent />
+				{/* Rendered here: route meta is deduped by name, which would drop one. */}
+				<meta
+					name="theme-color"
+					media="(prefers-color-scheme: light)"
+					content="#f6f7f9"
+				/>
+				<meta
+					name="theme-color"
+					media="(prefers-color-scheme: dark)"
+					content="#101216"
+				/>
 			</head>
 			<body>
 				<div className="app-backdrop" aria-hidden="true" />
